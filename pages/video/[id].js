@@ -7,6 +7,9 @@ import { Tooltip } from "primereact/tooltip";
 import { useRouter } from "next/router";
 import { OrderList } from "primereact/orderlist";
 import { Toast } from "primereact/toast";
+import { DataView, DataViewLayoutOptions } from "primereact/dataview";
+import { classNames } from "primereact/utils";
+import { InputText } from "primereact/inputtext";
 
 const Video = () => {
   const [videoListData, setVideoListData] = useState([]);
@@ -84,14 +87,22 @@ const Video = () => {
 
   const itemTemplate = (item) => {
     return (
-      <div
-        className="flex flex-wrap p-0 align-items-center gap-3"
-        onClick={() => {
-          playSelectedVideo(item);
-        }}
-      >
-        <img className="shadow-2 flex-shrink-0 border-round" width={64} src={`https://img.youtube.com/vi/${item.videoId}/default.jpg`} alt={item.title} />
-        <div className="flex-1 flex flex-column gap-2 xl:mr-8">
+      <div className="flex flex-wrap p-0 align-items-center gap-3">
+        <img
+          className="shadow-2 flex-shrink-0 border-round"
+          width={64}
+          src={`https://img.youtube.com/vi/${item.videoId}/default.jpg`}
+          alt={item.title}
+          onClick={() => {
+            playSelectedVideo(item);
+          }}
+        />
+        <div
+          className="flex-1 flex flex-column gap-2 xl:mr-8"
+          onClick={() => {
+            playSelectedVideo(item);
+          }}
+        >
           <span className="font-bold">{item.title}</span>
           <div className="flex align-items-center gap-2">
             <span>{item.description}</span>
@@ -107,16 +118,79 @@ const Video = () => {
     );
   };
 
+  const listItemTemplate = (videoList, index) => {
+    return (
+      <div className="col-12" key={videoList.id}>
+        <div className={classNames("flex flex-column xl:flex-row xl:align-items-start px-1 py-3 gap-4", { "border-top-1 surface-border": index !== 0 })}>
+          <img
+            className="w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto border-round"
+            src={`https://img.youtube.com/vi/${videoList.videoId}/0.jpg`}
+            alt={videoList.title}
+            onClick={() => {
+              playSelectedVideo(videoList);
+            }}
+          />
+          <div className="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
+            <div
+              className="flex flex-column align-items-center sm:align-items-start gap-3"
+              onClick={() => {
+                playSelectedVideo(videoList);
+              }}
+            >
+              <div className="text-2xl font-bold text-900">{videoList.title}</div>
+              {/* <Rating value={product.rating} readOnly cancel={false}></Rating> */}
+              <div className="flex align-items-center gap-3">
+                <span className="flex align-items-center gap-2">
+                  {/* <i className="pi pi-tag"></i> */}
+                  <span className="font-semibold">{videoList.description}</span>
+                </span>
+                {/* <Tag value={product.inventoryStatus} severity={getSeverity(product)}></Tag> */}
+              </div>
+            </div>
+            <div className="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2">
+              {/* <i className="pi pi-plus"></i> */}
+              <Button
+                icon="pi pi-plus"
+                text
+                size="large"
+                onClick={() => {
+                  addToPlayNextQueue(videoList);
+                }}
+              />
+              {/* <Button icon="pi pi-plus" className="p-button-rounded"></Button> */}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Header content (optional, often used for layout options and sorting)
+  const renderHeader = () => {
+    return (
+      <div className="flex justify-content-end">
+        <div className="field col-12 lg:col-4">
+          <span className="p-input-icon-left">
+            <i className="pi pi-search" />
+            <InputText placeholder="Keyword Search" />
+          </span>
+        </div>
+      </div>
+    );
+  };
+
+  const header = renderHeader();
+
   return (
     <>
       <Toast ref={toast} appendTo={null} />
 
-      <div className="flex flex-column gap-3 flex-wrap">
-        <div className="lg:ml-4 flex flex-column flex-wrap" style={{ height: "330px", position: "sticky", top: "100px" }}>
+      <div className="flex flex-row gap-3 w-screen overflow-x-hidden px-6">
+        <div className="w-6" style={{ overflow: "scroll", position: "sticky", top: "10px" }}>
           {selectedVideoSrc ? (
             <>
               <iframe
-                className="flex align-items-center justify-content-center mb-4 mt-1 shadow-4"
+                className="flex align-items-center justify-content-center shadow-4 h-24rem w-full"
                 // width=" 590"
                 // height="300"
                 src={selectedVideoSrc}
@@ -128,29 +202,37 @@ const Video = () => {
                 msallowfullscreen="msallowfullscreen"
                 oallowfullscreen="oallowfullscreen"
                 webkitallowfullscreen="webkitallowfullscreen"
-                style={{ height: "300px", width: "40%" }}
                 onload='javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+"px";}(this));'
               ></iframe>
-              <div
-                className="grid text-xl font-medium flex mb-4 mt-1 bg-black-alpha-90 shadow-5 align-items-center justify-content-center"
-                style={{ height: "300px", width: "60%", overflow: "scroll", color: "#aaa" }}
-              >
-                {playNextVideoListData.length > 0 ? (
-                  <OrderList className="w-full" dataKey="id" value={playNextVideoListData} onChange={(e) => setPlayNextVideoListData(e.value)} itemTemplate={itemTemplate}></OrderList>
-                ) : (
-                  "No video selected in queue"
-                )}
-              </div>
             </>
           ) : (
-            <div className="text-xl font-medium flex align-items-center justify-content-center mb-4 mt-1 border-round bg-black-alpha-90 text-white shadow-5" style={{ height: "300px", width: "100%" }}>
+            <div className="text-xl font-medium flex align-items-center justify-content-center mb-4 mt-1 border-round bg-black-alpha-90 text-white shadow-5 h-24rem">
               Please select a video to play...!
             </div>
           )}
+
+          <div className="bg-black-alpha-90" style={{ minHeight: "52vh", maxHeight: "52vh", overflow: "scroll" }}>
+            {playNextVideoListData.length > 0 ? (
+              <OrderList dataKey="id" value={playNextVideoListData} onChange={(e) => setPlayNextVideoListData(e.value)} itemTemplate={itemTemplate}></OrderList>
+            ) : (
+              <div className="text-xl font-medium flex align-items-center justify-content-center border-round bg-black-alpha-90 text-white" style={{ minHeight: "52vh" }}>
+                Add videos to play next
+              </div>
+            )}
+          </div>
         </div>
-        <div className="grid lg:ml-3" style={{ height: "400px", overflow: "scroll" }}>
+        <div className="w-6" style={{ maxHeight: "87vh", overflow: "scroll", position: "sticky", top: "10px" }}>
+          <DataView
+            value={videoListData} // Required: The array of data to display
+            itemTemplate={listItemTemplate} // Required: The function that renders each item
+            header={header} // Optional: Header content (e.g., layout switch)
+            // paginator={true} // Optional: Enable pagination
+            // rows={4} // Optional: Number of items per page
+          />
+        </div>
+        {/* <div className="grid w-full" style={{ overflow: "scroll" }}>
           {Array.from(videoListData).map((videoList) => (
-            <div className="col-12 lg:col-6 xl:col-4">
+            <div className="col-12">
               <div className="card mb-0 cursor-pointer custom-shadow-4-on-hover custom-shadow-1">
                 <div className="flex justify-content-between">
                   <div
@@ -184,12 +266,12 @@ const Video = () => {
                     }}
                   />
                 </div>
-                {/* <span className="text-green-500 font-medium">24 new </span>
-            <span className="text-500">since last visit</span> */}
+                <span className="text-green-500 font-medium">24 new </span>
+            <span className="text-500">since last visit</span>
               </div>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
     </>
   );
