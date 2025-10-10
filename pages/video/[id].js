@@ -121,33 +121,33 @@ const Video = () => {
   const listItemTemplate = (videoList, index) => {
     return (
       <div className="col-12" key={videoList.id}>
-        <div className={classNames("flex flex-column xl:flex-row xl:align-items-start px-1 py-3 gap-4", { "border-top-1 surface-border": index !== 0 })}>
+        <div className={classNames("flex flex-row align-items-start py-1 gap-4", { "border-top-1 surface-border": index !== 0 })}>
           <img
-            className="w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto border-round"
+            className="w-9rem shadow-2 block mx-auto border-round"
             src={`https://img.youtube.com/vi/${videoList.videoId}/0.jpg`}
             alt={videoList.title}
             onClick={() => {
               playSelectedVideo(videoList);
             }}
           />
-          <div className="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
+          <div className="flex flex-row justify-content-between align-items-start flex-1 gap-4">
             <div
-              className="flex flex-column align-items-center sm:align-items-start gap-3"
+              className="flex flex-column align-items-start gap-2"
               onClick={() => {
                 playSelectedVideo(videoList);
               }}
             >
-              <div className="text-2xl font-bold text-900">{videoList.title}</div>
+              <div className="text-xl font-bold text-900">{videoList.title}</div>
               {/* <Rating value={product.rating} readOnly cancel={false}></Rating> */}
               <div className="flex align-items-center gap-3">
                 <span className="flex align-items-center gap-2">
                   {/* <i className="pi pi-tag"></i> */}
-                  <span className="font-semibold">{videoList.description}</span>
+                  <span className="text-xs font-semibold">{videoList.description}</span>
                 </span>
                 {/* <Tag value={product.inventoryStatus} severity={getSeverity(product)}></Tag> */}
               </div>
             </div>
-            <div className="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2">
+            <div className="flex align-items-center gap-3">
               {/* <i className="pi pi-plus"></i> */}
               <Button
                 icon="pi pi-plus"
@@ -169,10 +169,10 @@ const Video = () => {
   const renderHeader = () => {
     return (
       <div className="flex justify-content-end">
-        <div className="field col-12 lg:col-4">
+        <div className="field col-12">
           <span className="p-input-icon-left">
             <i className="pi pi-search" />
-            <InputText placeholder="Keyword Search" />
+            <InputText placeholder="Search video" />
           </span>
         </div>
       </div>
@@ -190,7 +190,8 @@ const Video = () => {
           {selectedVideoSrc ? (
             <>
               <iframe
-                className="flex align-items-center justify-content-center shadow-4 h-24rem w-full"
+                className="flex align-items-center justify-content-center shadow-4 w-full"
+                style={{ minHeight: "40vh" }}
                 // width=" 590"
                 // height="300"
                 src={selectedVideoSrc}
@@ -206,22 +207,22 @@ const Video = () => {
               ></iframe>
             </>
           ) : (
-            <div className="text-xl font-medium flex align-items-center justify-content-center mb-4 mt-1 border-round bg-black-alpha-90 text-white shadow-5 h-24rem">
+            <div className="text-xl font-medium flex align-items-center justify-content-center bg-black-alpha-90 text-white" style={{ minHeight: "40vh" }}>
               Please select a video to play...!
             </div>
           )}
 
-          <div className="bg-black-alpha-90" style={{ minHeight: "52vh", maxHeight: "52vh", overflow: "scroll" }}>
+          <div className="bg-black-alpha-90" style={{ minHeight: "40vh", maxHeight: "40vh", overflow: "scroll" }}>
             {playNextVideoListData.length > 0 ? (
               <OrderList dataKey="id" value={playNextVideoListData} onChange={(e) => setPlayNextVideoListData(e.value)} itemTemplate={itemTemplate}></OrderList>
             ) : (
-              <div className="text-xl font-medium flex align-items-center justify-content-center border-round bg-black-alpha-90 text-white" style={{ minHeight: "52vh" }}>
+              <div className="text-xl font-medium flex align-items-center justify-content-center  text-white" style={{ minHeight: "40vh" }}>
                 Add videos to play next
               </div>
             )}
           </div>
         </div>
-        <div className="w-6" style={{ maxHeight: "87vh", overflow: "scroll", position: "sticky", top: "10px" }}>
+        <div className="w-6" style={{ maxHeight: "80vh", overflow: "scroll", position: "sticky", top: "10px" }}>
           <DataView
             value={videoListData} // Required: The array of data to display
             itemTemplate={listItemTemplate} // Required: The function that renders each item
