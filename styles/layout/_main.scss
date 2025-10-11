@@ -9,7 +9,8 @@ html {
 body {
   font-family: var(--font-family);
   color: var(--text-color);
-  background-color: var(--surface-ground);
+  // background-color: var(--surface-ground);
+  background-color: #282828;
   margin: 0;
   padding: 0;
   min-height: 100%;
@@ -408,6 +409,7 @@ a {
   border-bottom-right-radius: 0px;
   border-bottom-left-radius: 0px;
 }
+
 .p-orderlist .p-orderlist-list .p-orderlist-item {
   color: white;
 }
@@ -415,4 +417,16 @@ a {
 // css for video options TiredMenu
 .p-tieredmenu {
   width: auto;
+}
+
+// css for video options DataView
+.p-dataview-header {
+  background-color: var(--surface-ground) !important;
+  padding: 0 !important;
+}
+.p-dataview-header div div {
+  margin: 0 !important;
+}
+.p-dataview-content {
+  background-color: var(--surface-ground) !important;
 }

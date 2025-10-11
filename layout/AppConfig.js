@@ -57,9 +57,9 @@ const AppConfig = (props) => {
     return (
         <>
         {/* TODO: temp removing theme config change button */}
-            {/* <button className="layout-config-button p-link" type="button" onClick={onConfigButtonClick}>
+            <button className="layout-config-button p-link" type="button" onClick={onConfigButtonClick}>
                 <i className="pi pi-cog"></i>
-            </button> */}
+            </button>
 
             <Sidebar visible={layoutState.configSidebarVisible} onHide={onConfigSidebarHide} position="right" className="layout-config-sidebar w-20rem">
                 {!props.simple && (

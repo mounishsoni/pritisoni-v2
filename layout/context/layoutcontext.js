@@ -6,7 +6,7 @@ export const LayoutProvider = (props) => {
     const [layoutConfig, setLayoutConfig] = useState({
         ripple: true,
         inputStyle: 'outlined',
-        menuMode: 'static',
+        menuMode: 'overlay',
         colorScheme: 'light',
         theme: 'lara-light-indigo',
         scale: 14

@@ -121,9 +121,9 @@ const Video = () => {
   const listItemTemplate = (videoList, index) => {
     return (
       <div className="col-12" key={videoList.id}>
-        <div className={classNames("flex flex-row align-items-start py-1 gap-4", { "border-top-1 surface-border": index !== 0 })}>
+        <div className={classNames("flex flex-row align-items-start py-1 px-3 gap-4", { "border-top-1 surface-border": index !== 0 })}>
           <img
-            className="w-9rem shadow-2 block mx-auto border-round"
+            className="w-7rem shadow-2 block mx-auto border-round"
             src={`https://img.youtube.com/vi/${videoList.videoId}/0.jpg`}
             alt={videoList.title}
             onClick={() => {
@@ -185,7 +185,7 @@ const Video = () => {
     <>
       <Toast ref={toast} appendTo={null} />
 
-      <div className="flex flex-row gap-3 w-screen overflow-x-hidden px-6">
+      <div className="flex flex-row gap-3 w-screen overflow-x-hidden px-3">
         <div className="w-6" style={{ overflow: "scroll", position: "sticky", top: "10px" }}>
           {selectedVideoSrc ? (
             <>
@@ -222,7 +222,7 @@ const Video = () => {
             )}
           </div>
         </div>
-        <div className="w-6" style={{ maxHeight: "80vh", overflow: "scroll", position: "sticky", top: "10px" }}>
+        <div className="w-6 bg-black-alpha-90" style={{ maxHeight: "80vh", overflow: "scroll", position: "sticky", top: "10px" }}>
           <DataView
             value={videoListData} // Required: The array of data to display
             itemTemplate={listItemTemplate} // Required: The function that renders each item
