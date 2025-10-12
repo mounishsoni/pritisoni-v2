@@ -401,8 +401,7 @@ a {
 
 // css for ul under OrderList - queue/play next div
 .p-orderlist .p-orderlist-list {
-  max-height: 300px;
-  min-height: 300px;
+  max-height: 40vh !important;
   background-color: transparent;
   color: #fff;
   border: none;

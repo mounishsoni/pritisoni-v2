@@ -214,7 +214,9 @@ const Video = () => {
 
           <div className="bg-black-alpha-90" style={{ minHeight: "40vh", maxHeight: "40vh", overflow: "scroll" }}>
             {playNextVideoListData.length > 0 ? (
-              <OrderList dataKey="id" value={playNextVideoListData} onChange={(e) => setPlayNextVideoListData(e.value)} itemTemplate={itemTemplate}></OrderList>
+              <>
+                <OrderList dataKey="id" value={playNextVideoListData} onChange={(e) => setPlayNextVideoListData(e.value)} itemTemplate={itemTemplate}></OrderList>
+              </>
             ) : (
               <div className="text-xl font-medium flex align-items-center justify-content-center  text-white" style={{ minHeight: "40vh" }}>
                 Add videos to play next
