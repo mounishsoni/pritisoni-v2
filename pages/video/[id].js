@@ -10,16 +10,56 @@ import { Toast } from "primereact/toast";
 import { DataView, DataViewLayoutOptions } from "primereact/dataview";
 import { classNames } from "primereact/utils";
 import { InputText } from "primereact/inputtext";
+import YouTube from "react-youtube";
 
 const Video = () => {
   const [videoListData, setVideoListData] = useState([]);
-  const [selectedVideoSrc, setSelectedVideoSrc] = useState("");
   const [collectionId, setcollectionId] = useState(null);
   const [playNextVideoListData, setPlayNextVideoListData] = useState([]);
 
   const router = useRouter();
   const toast = useRef(null);
   const menu = useRef(null);
+
+  const playerRef = useRef(null);
+  const [selectedVideoId, setSelectedVideoId] = useState("");
+  const [startSeconds, setStartSeconds] = useState(0);
+  const onReady = (event) => {
+    playerRef.current = event.target;
+
+    // 1. Check if we have a saved time for this video
+    const savedTime = localStorage.getItem(`yt-resume-${selectedVideoId}`);
+    if (savedTime) {
+      setStartSeconds(parseInt(savedTime));
+      // event.target.seekTo(parseInt(savedTime), true);
+    } else {
+      setStartSeconds(0);
+    }
+  };
+
+  const onStateChange = (event) => {
+    // 2. State '1' means the video is playing
+    if (event.data === 1) {
+      const saver = setInterval(() => {
+        const currentTime = event.target.getCurrentTime();
+        localStorage.setItem(`yt-resume-${selectedVideoId}`, currentTime);
+      }, 1000); // Save every 3 seconds
+
+      // Clear interval when video pauses or ends
+      event.target.saverInterval = saver;
+    } else {
+      clearInterval(event.target.saverInterval);
+    }
+  };
+
+  const opts = {
+    // height: "390",
+    // width: "640",
+    playerVars: {
+      autoplay: 0,
+      start: startSeconds,
+    },
+  };
 
   async function fetchVideos() {
     // fetch video data
@@ -61,7 +101,7 @@ const Video = () => {
   }, [collectionId]);
 
   function playSelectedVideo(video) {
-    setSelectedVideoSrc("https://www.youtube.com/embed/" + video.videoId);
+    setSelectedVideoId(video.videoId);
   }
 
   function addToPlayNextQueue(newItem) {
@@ -187,9 +227,9 @@ const Video = () => {
 
       <div className="flex flex-row gap-3 w-screen overflow-x-hidden px-3">
         <div className="w-6" style={{ overflow: "scroll", position: "sticky", top: "10px" }}>
-          {selectedVideoSrc ? (
+          {selectedVideoId ? (
             <>
-              <iframe
+              {/* <iframe
                 className="flex align-items-center justify-content-center shadow-4 w-full"
                 style={{ minHeight: "40vh" }}
                 // width=" 590"
@@ -204,7 +244,8 @@ const Video = () => {
                 oallowfullscreen="oallowfullscreen"
                 webkitallowfullscreen="webkitallowfullscreen"
                 onload='javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+"px";}(this));'
-              ></iframe>
+              ></iframe> */}
+              <YouTube videoId={selectedVideoId} opts={opts} onReady={onReady} onStateChange={onStateChange} />
             </>
           ) : (
             <div className="text-xl font-medium flex align-items-center justify-content-center bg-black-alpha-90 text-white" style={{ minHeight: "40vh" }}>
