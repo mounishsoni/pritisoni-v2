@@ -9,6 +9,7 @@ import AppTopbar from './AppTopbar';
 import AppConfig from './AppConfig';
 import { LayoutContext } from './context/layoutcontext';
 import PrimeReact from 'primereact/api';
+import AppVideoPlayerFooterBar from './AppVideoPlayerFooterBar';
 
 const Layout = (props) => {
     const { layoutConfig, layoutState, setLayoutState } = useContext(LayoutContext);
@@ -129,6 +130,7 @@ const Layout = (props) => {
                     {/* <AppFooter /> */}
                 </div>
                 <AppConfig />
+                <AppVideoPlayerFooterBar />
                 <div className="layout-mask"></div>
             </div>
         </React.Fragment>

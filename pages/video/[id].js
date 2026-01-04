@@ -11,6 +11,7 @@ import { DataView, DataViewLayoutOptions } from "primereact/dataview";
 import { classNames } from "primereact/utils";
 import { InputText } from "primereact/inputtext";
 import YouTube from "react-youtube";
+import VideoPlayerContent from "../../components/videoPlayer/VideoPlayerContent";
 
 const Video = () => {
   const [videoListData, setVideoListData] = useState([]);
@@ -23,6 +24,7 @@ const Video = () => {
 
   const playerRef = useRef(null);
   const [selectedVideoId, setSelectedVideoId] = useState("");
+  const [selectedVideoDetails, setSelectedVideoDetails] = useState({});
   const [startSeconds, setStartSeconds] = useState(0);
   const onReady = (event) => {
     playerRef.current = event.target;
@@ -53,8 +55,8 @@ const Video = () => {
   };
 
   const opts = {
-    // height: "390",
-    // width: "640",
+    height: "450px",
+    width: "100%",
     playerVars: {
       autoplay: 0,
       start: startSeconds,
@@ -102,6 +104,7 @@ const Video = () => {
 
   function playSelectedVideo(video) {
     setSelectedVideoId(video.videoId);
+    setSelectedVideoDetails(video);
   }
 
   function addToPlayNextQueue(newItem) {
@@ -225,6 +228,8 @@ const Video = () => {
     <>
       <Toast ref={toast} appendTo={null} />
 
+      <VideoPlayerContent selectedVideoDetails={selectedVideoDetails} playNextVideoListData={playNextVideoListData} />
+
       <div className="flex flex-row gap-3 w-screen overflow-x-hidden px-3">
         <div className="w-6" style={{ overflow: "scroll", position: "sticky", top: "10px" }}>
           {selectedVideoId ? (
@@ -245,7 +250,7 @@ const Video = () => {
                 webkitallowfullscreen="webkitallowfullscreen"
                 onload='javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+"px";}(this));'
               ></iframe> */}
-              <YouTube videoId={selectedVideoId} opts={opts} onReady={onReady} onStateChange={onStateChange} />
+              <YouTube videoId={selectedVideoId} opts={opts} onReady={onReady} onStateChange={onStateChange} style={{ minHeight: "40vh" }} />
             </>
           ) : (
             <div className="text-xl font-medium flex align-items-center justify-content-center bg-black-alpha-90 text-white" style={{ minHeight: "40vh" }}>
