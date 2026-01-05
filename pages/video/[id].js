@@ -12,6 +12,8 @@ import { classNames } from "primereact/utils";
 import { InputText } from "primereact/inputtext";
 import YouTube from "react-youtube";
 import VideoPlayerContent from "../../components/videoPlayer/VideoPlayerContent";
+import { useDispatch, useSelector } from "react-redux";
+import { setPlayListData, setUserData } from "../../features/slice/initialStatesSlice";
 
 const Video = () => {
   const [videoListData, setVideoListData] = useState([]);
@@ -19,6 +21,9 @@ const Video = () => {
   const [playNextVideoListData, setPlayNextVideoListData] = useState([]);
 
   const router = useRouter();
+  const user = useSelector((state) => state.initialState.user);
+  const dispatch = useDispatch();
+
   const toast = useRef(null);
   const menu = useRef(null);
 
@@ -109,11 +114,14 @@ const Video = () => {
 
   function addToPlayNextQueue(newItem) {
     // Check if an item with the same ID already exists
-    const existingItem = playNextVideoListData.find((item) => item.videoId === newItem.videoId);
+    let newPlaylist = [...user?.playlist];
+    const existingItem = newPlaylist.find((item) => item.videoId === newItem.videoId);
 
     // If no existing item was found, create a new array with the new item
     if (!existingItem) {
-      setPlayNextVideoListData((prevItems) => [...prevItems, newItem]);
+      // setPlayNextVideoListData((prevItems) => [...prevItems, newItem]);
+      newPlaylist.push(newItem);
+      dispatch(setUserData({ ...user, playlist: newPlaylist }));
     } else {
       // open toast
       toast.current.show({
@@ -190,8 +198,16 @@ const Video = () => {
                 {/* <Tag value={product.inventoryStatus} severity={getSeverity(product)}></Tag> */}
               </div>
             </div>
+            {/* <div className="flex gap-2">
+              <Button icon="pi pi-play" aria-label="Filter" />
+              <Button icon="pi pi-bookmark" severity="secondary" aria-label="Bookmark" />
+              <Button icon="pi pi-play" severity="success" aria-label="Search" />
+              <Button icon="pi pi-plus" severity="info" aria-label="User" />
+              <Button icon="pi pi-bell" severity="warning" aria-label="Notification" />
+              <Button icon="pi pi-heart" severity="help" aria-label="Favorite" />
+              <Button icon="pi pi-times" severity="danger" aria-label="Cancel" />
+            </div> */}
             <div className="flex align-items-center gap-3">
-              {/* <i className="pi pi-plus"></i> */}
               <Button
                 icon="pi pi-plus"
                 text
@@ -200,7 +216,6 @@ const Video = () => {
                   addToPlayNextQueue(videoList);
                 }}
               />
-              {/* <Button icon="pi pi-plus" className="p-button-rounded"></Button> */}
             </div>
           </div>
         </div>
@@ -231,10 +246,10 @@ const Video = () => {
       <VideoPlayerContent selectedVideoDetails={selectedVideoDetails} playNextVideoListData={playNextVideoListData} />
 
       <div className="flex flex-row gap-3 w-screen overflow-x-hidden px-3">
-        <div className="w-6" style={{ overflow: "scroll", position: "sticky", top: "10px" }}>
+        {/* <div className="w-6" style={{ overflow: "scroll", position: "sticky", top: "10px" }}>
           {selectedVideoId ? (
             <>
-              {/* <iframe
+              <iframe
                 className="flex align-items-center justify-content-center shadow-4 w-full"
                 style={{ minHeight: "40vh" }}
                 // width=" 590"
@@ -249,7 +264,7 @@ const Video = () => {
                 oallowfullscreen="oallowfullscreen"
                 webkitallowfullscreen="webkitallowfullscreen"
                 onload='javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+"px";}(this));'
-              ></iframe> */}
+              ></iframe>
               <YouTube videoId={selectedVideoId} opts={opts} onReady={onReady} onStateChange={onStateChange} style={{ minHeight: "40vh" }} />
             </>
           ) : (
@@ -269,8 +284,8 @@ const Video = () => {
               </div>
             )}
           </div>
-        </div>
-        <div className="w-6 bg-black-alpha-90" style={{ maxHeight: "80vh", overflow: "scroll", position: "sticky", top: "10px" }}>
+        </div> */}
+        <div className="w-12 bg-black-alpha-90" style={{ maxHeight: "80vh", overflow: "scroll", position: "sticky", top: "10px" }}>
           <DataView
             value={videoListData} // Required: The array of data to display
             itemTemplate={listItemTemplate} // Required: The function that renders each item

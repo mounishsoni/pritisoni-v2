@@ -20,10 +20,7 @@ const LoginWithSocial = () => {
     try {
       const res = await auth.signInWithPopup(provider);
       const user = res.user;
-      const fetchUser = await supabase
-        .from("users")
-        .select()
-        .ilike("user_id", user.uid);
+      const fetchUser = await supabase.from("users").select().ilike("user_id", user.uid);
       let userData = {};
       if (fetchUser.data.length === 0) {
         userData = {
@@ -48,6 +45,7 @@ const LoginWithSocial = () => {
           role: userData.role,
           pickup_branch: userData.pickup_branch,
           drop_branch: userData.drop_branch,
+          playlist: [],
         })
       );
 
@@ -60,13 +58,11 @@ const LoginWithSocial = () => {
       setTimeout(() => {
         Router.push("/dashboard");
       }, 1000);
-
     } catch (err) {
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail:
-          "Error while logging with Google, Please try again after some time or contact tech support!",
+        detail: "Error while logging with Google, Please try again after some time or contact tech support!",
         sticky: true,
       });
     }
