@@ -441,7 +441,7 @@ const Video = () => {
       <div className="video-player-bar">
         {selectedVideoId && selectedVideoDetails ? (
           <div class="grid">
-            <div class="col-2">
+            <div class="col-2 sm:col-6 md:col-4 lg:col-3">
               <YouTube
                 videoId={selectedVideoId}
                 opts={videoPlayerBarOpts}
@@ -450,7 +450,7 @@ const Video = () => {
                 // onEnd={playNext} // 4. Automatically play next when finished
               />
             </div>
-            <div class="col-6">
+            <div class="col-6 sm:col-6 md:col-8 lg:col-9">
               <div class="text-xl font-bold text-overflow-ellipsis white-space-nowrap overflow-hidden max-w-100rem tooltip-show-full-title" data-pr-tooltip={selectedVideoDetails.title}>
                 {selectedVideoDetails.title}
               </div>
