@@ -14,6 +14,8 @@ import YouTube from "react-youtube";
 import VideoPlayerContent from "../../components/videoPlayer/VideoPlayerContent";
 import { useDispatch, useSelector } from "react-redux";
 import { setPlayListData, setUserData } from "../../features/slice/initialStatesSlice";
+import { SplitButton } from "primereact/splitbutton";
+import { Menu } from "primereact/menu";
 
 const Video = () => {
   const [videoListData, setVideoListData] = useState([]);
@@ -26,6 +28,7 @@ const Video = () => {
 
   const toast = useRef(null);
   const menu = useRef(null);
+  const menuRight = useRef(null);
 
   const playerRef = useRef(null);
   const [selectedVideoId, setSelectedVideoId] = useState("");
@@ -67,6 +70,69 @@ const Video = () => {
       start: startSeconds,
     },
   };
+
+  // YouTube Player Options
+  const videoPlayerBarOpts = {
+    height: "128",
+    width: "250",
+    playerVars: {
+      autoplay: 0, // Auto-play when the ID changes
+      start: startSeconds,
+    },
+  };
+
+  const saveToPlaylist = (item) => {
+    toast.current.show({ severity: "success", summary: "Success", detail: item.title });
+  };
+
+  const items = (item) => [
+    {
+      // label: "Options",
+      items: [
+        {
+          label: "Add to queue",
+          icon: "pi pi-plus-circle",
+          command: () => {
+            toast.current.show({ severity: "info", summary: "Info", detail: "Video added to queue" });
+          },
+        },
+        {
+          label: "Save to playlist",
+          icon: "pi pi-bookmark",
+          command: () => {
+            saveToPlaylist(item);
+          },
+        },
+        {
+          label: "Save to Watch later",
+          icon: "pi pi-clock",
+          command: () => {
+            toast.current.show({ severity: "info", summary: "Info", detail: "Video saved to watch later" });
+          },
+        },
+        {
+          label: "Share",
+          icon: "pi pi-share-alt",
+          command: () => {
+            toast.current.show({ severity: "success", summary: "Success", detail: "Video has been Shared" });
+          },
+        },
+
+        // {
+        //   label: "Custom template",
+        //   template: (item, options) => {
+        //     return (
+        //       <div className="p-menuitem-content" data-pc-section="content" onMouseMove={(e) => options.onMouseMove(e)}>
+        //         <a href="#" className="p-menuitem-link">
+        //           Lorem ipsum
+        //         </a>
+        //       </div>
+        //     );
+        //   },
+        // },
+      ],
+    },
+  ];
 
   async function fetchVideos() {
     // fetch video data
@@ -121,7 +187,7 @@ const Video = () => {
     if (!existingItem) {
       // setPlayNextVideoListData((prevItems) => [...prevItems, newItem]);
       newPlaylist.push(newItem);
-      dispatch(setUserData({ ...user, playlist: newPlaylist }));
+      dispatch(setUserData({ ...user, playlist: newPlaylist, currentIndex: user?.currentIndex ? user.currentIndex : 0 }));
     } else {
       // open toast
       toast.current.show({
@@ -239,13 +305,24 @@ const Video = () => {
 
   const header = renderHeader();
 
+  const cardHeader = (item) => {
+    return (
+      <img
+        className="w-full shadow-2 border-round"
+        src={`https://img.youtube.com/vi/${item.videoId}/0.jpg`}
+        alt={item.title}
+        onClick={() => {
+          playSelectedVideo(item);
+        }}
+      />
+    );
+  };
+
   return (
     <>
       <Toast ref={toast} appendTo={null} />
 
-      <VideoPlayerContent selectedVideoDetails={selectedVideoDetails} playNextVideoListData={playNextVideoListData} />
-
-      <div className="flex flex-row gap-3 w-screen overflow-x-hidden px-3">
+      <Card style={{ height: "calc(100vh - 17rem)", overflowX: "scroll" }}>
         {/* <div className="w-6" style={{ overflow: "scroll", position: "sticky", top: "10px" }}>
           {selectedVideoId ? (
             <>
@@ -285,14 +362,35 @@ const Video = () => {
             )}
           </div>
         </div> */}
-        <div className="w-12 bg-black-alpha-90" style={{ maxHeight: "80vh", overflow: "scroll", position: "sticky", top: "10px" }}>
-          <DataView
+        {/* <DataView
             value={videoListData} // Required: The array of data to display
             itemTemplate={listItemTemplate} // Required: The function that renders each item
             header={header} // Optional: Header content (e.g., layout switch)
-            // paginator={true} // Optional: Enable pagination
-            // rows={4} // Optional: Number of items per page
-          />
+          /> */}
+        <div class="flex align-content-evenly flex-wrap">
+          {Array.from(videoListData).map((item) => (
+            <Card
+              className="align-items-center justify-content-center bg-primary font-bold m-2"
+              header={cardHeader(item)}
+              // title={item.title}
+              // subTitle={item.description}
+              style={{ width: "450px" }}
+            >
+              <div class="grid">
+                <div class="col-10">
+                  <div className="text-lg text-overflow-ellipsis white-space-nowrap overflow-hidden tooltip-show-full-title-card" data-pr-tooltip={item.title}>
+                    {item.title}
+                  </div>
+                  <Tooltip target=".tooltip-show-full-title-card" mouseTrack mouseTrackLeft={10} />
+                  <div className="font-italic">{item.description}</div>
+                </div>
+                <div class="col-2">
+                  <Menu model={items(item)} popup ref={menuRight} id="popup_menu_right" popupAlignment="right" />
+                  <Button className="" icon="pi pi-ellipsis-v" onClick={(event) => menuRight.current.toggle(event)} aria-controls="popup_menu_right" aria-haspopup />
+                </div>
+              </div>
+            </Card>
+          ))}
         </div>
         {/* <div className="grid w-full" style={{ overflow: "scroll" }}>
           {Array.from(videoListData).map((videoList) => (
@@ -336,6 +434,31 @@ const Video = () => {
             </div>
           ))}
         </div> */}
+      </Card>
+
+      <div className="video-player-bar">
+        {selectedVideoId && selectedVideoDetails ? (
+          <div class="grid">
+            <div class="col-2">
+              <YouTube
+                videoId={selectedVideoId}
+                opts={videoPlayerBarOpts}
+                onReady={onReady}
+                onStateChange={onStateChange}
+                // onEnd={playNext} // 4. Automatically play next when finished
+              />
+            </div>
+            <div class="col-6">
+              <div class="text-xl font-bold text-overflow-ellipsis white-space-nowrap overflow-hidden max-w-100rem tooltip-show-full-title" data-pr-tooltip={selectedVideoDetails.title}>
+                {selectedVideoDetails.title}
+              </div>
+              <Tooltip target=".tooltip-show-full-title" mouseTrack mouseTrackLeft={10} />
+              <div class="text-lg font-italic text-overflow-ellipsis white-space-nowrap overflow-hidden max-w-100rem">{selectedVideoDetails.description}</div>
+            </div>
+          </div>
+        ) : (
+          <div class="flex text-xl font-bold align-items-center ml-5 h-10rem">Select a video to play...!</div>
+        )}
       </div>
     </>
   );

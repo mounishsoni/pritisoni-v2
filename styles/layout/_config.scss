@@ -85,3 +85,36 @@
     margin-left: 0;
     margin-top: 0;
 }
+
+
+.video-player-bar {
+    display: block;
+    position: fixed;
+    height: 10rem;
+    width: 100vw;
+    background: lightblue;
+    bottom: 0;
+    transition: background-color var(--transition-duration);
+    overflow: hidden;
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: -.25rem 0 1rem rgba(0, 0, 0, .15);
+
+    &:hover {
+        background: blue;
+    }
+}
+
+.video-player-bar .grid {
+    margin-right: 0;
+    margin-left: 0;
+    margin-top: 0;
+}
+
+.p-card .p-card-subtitle {
+    color: var(--primary-color-text);
+}
+
+.p-card .p-card-content {
+    padding: 0;
+}
