@@ -367,29 +367,31 @@ const Video = () => {
             itemTemplate={listItemTemplate} // Required: The function that renders each item
             header={header} // Optional: Header content (e.g., layout switch)
           /> */}
-        <div class="flex align-content-evenly flex-wrap">
+        <div className="grid">
           {Array.from(videoListData).map((item) => (
-            <Card
-              className="align-items-center justify-content-center bg-primary font-bold m-2"
-              header={cardHeader(item)}
-              // title={item.title}
-              // subTitle={item.description}
-              style={{ width: "450px" }}
-            >
-              <div class="grid">
-                <div class="col-10">
-                  <div className="text-lg text-overflow-ellipsis white-space-nowrap overflow-hidden tooltip-show-full-title-card" data-pr-tooltip={item.title}>
-                    {item.title}
+            <div className="col-12 md:col-6 lg:col-3">
+              <Card
+                className="align-items-center justify-content-center bg-primary font-bold m-2"
+                header={cardHeader(item)}
+                // title={item.title}
+                // subTitle={item.description}
+                // style={{ width: "450px" }}
+              >
+                <div class="grid">
+                  <div class="col-10 sm:col-10 md:col-8 lg:col-10">
+                    <div className="text-lg text-overflow-ellipsis white-space-nowrap overflow-hidden tooltip-show-full-title-card" data-pr-tooltip={item.title}>
+                      {item.title}
+                    </div>
+                    <Tooltip target=".tooltip-show-full-title-card" mouseTrack mouseTrackLeft={10} />
+                    <div className="font-italic">{item.description}</div>
                   </div>
-                  <Tooltip target=".tooltip-show-full-title-card" mouseTrack mouseTrackLeft={10} />
-                  <div className="font-italic">{item.description}</div>
+                  <div class="col-2 sm:col-1 md:col-1 lg:col-1">
+                    <Menu model={items(item)} popup ref={menuRight} id="popup_menu_right" popupAlignment="right" />
+                    <Button className="" icon="pi pi-ellipsis-v" onClick={(event) => menuRight.current.toggle(event)} aria-controls="popup_menu_right" aria-haspopup />
+                  </div>
                 </div>
-                <div class="col-2">
-                  <Menu model={items(item)} popup ref={menuRight} id="popup_menu_right" popupAlignment="right" />
-                  <Button className="" icon="pi pi-ellipsis-v" onClick={(event) => menuRight.current.toggle(event)} aria-controls="popup_menu_right" aria-haspopup />
-                </div>
-              </div>
-            </Card>
+              </Card>
+            </div>
           ))}
         </div>
         {/* <div className="grid w-full" style={{ overflow: "scroll" }}>
