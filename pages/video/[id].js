@@ -19,6 +19,7 @@ import { Menu } from "primereact/menu";
 
 const Video = () => {
   const [videoListData, setVideoListData] = useState([]);
+  const [selectedVideoItem, setSelectedVideoItem] = useState([]);
   const [collectionId, setcollectionId] = useState(null);
   const [playNextVideoListData, setPlayNextVideoListData] = useState([]);
 
@@ -85,15 +86,37 @@ const Video = () => {
     toast.current.show({ severity: "success", summary: "Success", detail: item.title });
   };
 
-  const items = (item) => [
+  const items = [
     {
       // label: "Options",
       items: [
         {
           label: "Add to favorite",
           icon: "pi pi-heart",
-          command: () => {
-            toast.current.show({ severity: "info", summary: "Info", detail: "Video marked as favorite" });
+          command: async () => {
+            const { data: favoriteData, error: e } = await supabase.from("favorite").select("id, is_favorite").eq("playlist_id", selectedVideoItem.id).eq("user_id", user.id);
+
+            if (favoriteData && favoriteData.length > 0) {
+              const { data, error } = await supabase
+                .from("favorite")
+                .update({
+                  is_favorite: !!!favoriteData[0].is_favorite,
+                  // updt_ver_num: 0, // TODO: future update
+                  updated_dttm: new Date(),
+                })
+                .eq("id", favoriteData[0].id)
+                .select("is_favorite");
+              toast.current.show({ severity: "success", summary: "Success", detail: data[0].is_favorite ? "Video marked as favorite" : "Video removed from favorite" });
+            } else {
+              const { data, error } = await supabase.from("favorite").insert({
+                playlist_id: selectedVideoItem.id,
+                user_id: user.id,
+                is_favorite: true,
+                // updt_ver_num: 0, // TODO: future update
+                updated_dttm: new Date(),
+              });
+              toast.current.show({ severity: "success", summary: "Success", detail: "Video marked as favorite" });
+            }
           },
         },
         {
@@ -393,8 +416,17 @@ const Video = () => {
                     <div className="font-italic">{item.description}</div>
                   </div>
                   <div class="col-2 sm:col-1 md:col-1 lg:col-1">
-                    <Menu model={items(item)} popup ref={menuRight} id="popup_menu_right" popupAlignment="right" />
-                    <Button className="" icon="pi pi-ellipsis-v" onClick={(event) => menuRight.current.toggle(event)} aria-controls="popup_menu_right" aria-haspopup />
+                    <Menu model={items} popup ref={menuRight} id="popup_menu_right" popupAlignment="right" />
+                    <Button
+                      className=""
+                      icon="pi pi-ellipsis-v"
+                      onClick={(event) => {
+                        setSelectedVideoItem(item);
+                        menuRight.current.toggle(event);
+                      }}
+                      aria-controls="popup_menu_right"
+                      aria-haspopup
+                    />
                   </div>
                 </div>
               </Card>
