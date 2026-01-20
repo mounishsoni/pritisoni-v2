@@ -90,6 +90,13 @@ const Video = () => {
       // label: "Options",
       items: [
         {
+          label: "Add to favorite",
+          icon: "pi pi-heart",
+          command: () => {
+            toast.current.show({ severity: "info", summary: "Info", detail: "Video marked as favorite" });
+          },
+        },
+        {
           label: "Add to queue",
           icon: "pi pi-plus-circle",
           command: () => {
