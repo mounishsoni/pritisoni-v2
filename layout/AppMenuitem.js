@@ -83,7 +83,7 @@ const AppMenuitem = (props) => {
           target={item.target}
           onClick={(e) => {
             if (!item.to) {
-              router.push(`/${encodeURIComponent(item.label?.toLowerCase())}/${encodeURIComponent(item.id)}`);
+              router.push(`/${encodeURIComponent(item.label?.toLowerCase())}/${encodeURIComponent(item.category_id)}`);
             } else {
               router.push(item.to);
             }

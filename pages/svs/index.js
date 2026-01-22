@@ -12,11 +12,7 @@ const ShriVidhyaSadhana = () => {
   async function fetchVideos() {
     // fetch video data
     try {
-      const { data, error } = await supabase
-        .from("playlist")
-        .select("*")
-        .eq("collection_id", "e63d812c-eb4d-4481-b8be-48e640b4a392")
-        .order("created_dttm", { ascending: false });
+      const { data, error } = await supabase.from("collection").select("*").eq("category_id", "e63d812c-eb4d-4481-b8be-48e640b4a392").order("created_dttm", { ascending: false });
       if (error) {
         console.error("Error fetching data:", error);
       } else {
@@ -63,10 +59,7 @@ const ShriVidhyaSadhana = () => {
             allow="picture-in-picture"
           ></iframe>
         ) : (
-          <div
-            className="text-2xl font-medium flex align-items-center justify-content-center mb-4 mt-2 border-round bg-black-alpha-90 text-white shadow-5"
-            style={{ width: "590px", height: "300px" }}
-          >
+          <div className="text-2xl font-medium flex align-items-center justify-content-center mb-4 mt-2 border-round bg-black-alpha-90 text-white shadow-5" style={{ width: "590px", height: "300px" }}>
             Please select a video to play...!
           </div>
         )}
@@ -86,11 +79,7 @@ const ShriVidhyaSadhana = () => {
                     {videoList.title}
                   </span>
 
-                  <Tooltip
-                    target=".tooltip-show-full-title"
-                    mouseTrack
-                    mouseTrackLeft={10}
-                  />
+                  <Tooltip target=".tooltip-show-full-title" mouseTrack mouseTrackLeft={10} />
 
                   <div className="font-medium">
                     <Chip className="text-sm" label="PDF in Gujarati Version" />

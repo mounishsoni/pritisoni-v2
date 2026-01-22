@@ -18,10 +18,7 @@ const AppMenu = () => {
 
   async function fetchMenuItems() {
     try {
-      const { data, error } = await supabase
-        .from("collection")
-        .select("*")
-        .order("title", { ascending: true });
+      const { data, error } = await supabase.from("category").select("*").order("title", { ascending: true });
 
       if (error) {
         console.error("Error fetching data:", error);
@@ -174,11 +171,7 @@ const AppMenu = () => {
       /> */}
       <ul className="layout-menu">
         {fetchedMenuItems.map((item, i) => {
-          return !item.seperator ? (
-            <AppMenuitem item={item} root={true} index={i} key={item.label} />
-          ) : (
-            <li className="menu-separator"></li>
-          );
+          return !item.seperator ? <AppMenuitem item={item} root={true} index={i} key={item.label} /> : <li className="menu-separator"></li>;
         })}
       </ul>
     </MenuProvider>

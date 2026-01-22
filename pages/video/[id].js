@@ -35,6 +35,7 @@ const Video = () => {
   const [selectedVideoId, setSelectedVideoId] = useState("");
   const [selectedVideoDetails, setSelectedVideoDetails] = useState({});
   const [startSeconds, setStartSeconds] = useState(0);
+
   const onReady = (event) => {
     playerRef.current = event.target;
 
@@ -94,7 +95,7 @@ const Video = () => {
           label: "Add to favorite",
           icon: "pi pi-heart",
           command: async () => {
-            const { data: favoriteData, error: e } = await supabase.from("favorite").select("id, is_favorite").eq("playlist_id", selectedVideoItem.id).eq("user_id", user.id);
+            const { data: favoriteData, error: e } = await supabase.from("favorite").select("favorite_id, is_favorite").eq("collection_id", selectedVideoItem.collection_id).eq("user_id", user.id);
 
             if (favoriteData && favoriteData.length > 0) {
               const { data, error } = await supabase
@@ -104,12 +105,12 @@ const Video = () => {
                   // updt_ver_num: 0, // TODO: future update
                   updated_dttm: new Date(),
                 })
-                .eq("id", favoriteData[0].id)
+                .eq("favorite_id", favoriteData[0].favorite_id)
                 .select("is_favorite");
               toast.current.show({ severity: "success", summary: "Success", detail: data[0].is_favorite ? "Video marked as favorite" : "Video removed from favorite" });
             } else {
               const { data, error } = await supabase.from("favorite").insert({
-                playlist_id: selectedVideoItem.id,
+                collection_id: selectedVideoItem.collection_id,
                 user_id: user.id,
                 is_favorite: true,
                 // updt_ver_num: 0, // TODO: future update
@@ -168,7 +169,7 @@ const Video = () => {
     // fetch video data
     try {
       if (collectionId) {
-        const { data, error } = await supabase.from("playlist").select("*").eq("collection_id", collectionId).order("created_dttm", { ascending: false });
+        const { data, error } = await supabase.from("collection").select("*").eq("category_id", collectionId).order("created_dttm", { ascending: false });
         if (error) {
           console.error("Error fetching data:", error);
         } else {

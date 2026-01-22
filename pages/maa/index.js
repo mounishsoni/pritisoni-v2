@@ -13,9 +13,9 @@ const Maa = () => {
     // fetch video data
     try {
       const { data, error } = await supabase
-        .from("playlist")
+        .from("collection")
         .select("*")
-        .eq("collection_id", "afc0833f-7da8-4896-b96d-b25db64dba72")
+        .eq("category_id", "afc0833f-7da8-4896-b96d-b25db64dba72")
         .order("created_dttm", { ascending: false });
       if (error) {
         console.error("Error fetching data:", error);

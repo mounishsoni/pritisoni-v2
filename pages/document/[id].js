@@ -8,14 +8,14 @@ import { Tooltip } from "primereact/tooltip";
 
 const Document = () => {
   const [documentListData, setDocumentListData] = useState([]);
-  const [collectionId, setcollectionId] = useState(null);
+  const [categoryId, setCategoryId] = useState(null);
   const router = useRouter();
 
   async function fetchDocument() {
     // fetch document data
     try {
-      if (collectionId) {
-        const { data, error } = await supabase.from("playlist").select("*").eq("collection_id", collectionId).order("created_dttm", { ascending: false });
+      if (categoryId) {
+        const { data, error } = await supabase.from("collection").select("*").eq("category_id", categoryId).order("created_dttm", { ascending: false });
         if (error) {
           console.error("Error fetching data:", error);
         } else {
@@ -42,13 +42,13 @@ const Document = () => {
 
   useMemo(() => {
     if (router.query.id !== undefined) {
-      setcollectionId(router.query.id);
+      setCategoryId(router.query.id);
     }
   }, [router.query]);
 
   useEffect(() => {
     fetchDocument();
-  }, [collectionId]);
+  }, [categoryId]);
 
   async function viewDocument(document) {
     console.log(document);

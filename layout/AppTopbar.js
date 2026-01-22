@@ -10,6 +10,7 @@ const AppTopbar = forwardRef((props, ref) => {
   const menubuttonRef = useRef(null);
   const topbarmenuRef = useRef(null);
   const topbarmenubuttonRef = useRef(null);
+  const router = useRouter();
 
   useImperativeHandle(ref, () => ({
     menubutton: menubuttonRef.current,
@@ -43,15 +44,33 @@ const AppTopbar = forwardRef((props, ref) => {
           "layout-topbar-menu-mobile-active": layoutState.profileSidebarVisible,
         })}
       >
-        <button type="button" className="p-link layout-topbar-button">
+        <button
+          type="button"
+          className="p-link layout-topbar-button"
+          onClick={() => {
+            router.push(`/favorite`);
+          }}
+        >
           <i className="pi pi-heart"></i>
           <span>Favorite</span>
         </button>
-        <button type="button" className="p-link layout-topbar-button">
+        <button
+          type="button"
+          className="p-link layout-topbar-button"
+          onClick={() => {
+            router.push(`/playlist`);
+          }}
+        >
           <i className="pi pi-bookmark"></i>
           <span>Playlist</span>
         </button>
-        <button type="button" className="p-link layout-topbar-button">
+        <button
+          type="button"
+          className="p-link layout-topbar-button"
+          onClick={() => {
+            router.push(`/watch-later`);
+          }}
+        >
           <i className="pi pi-clock"></i>
           <span>Watch Later</span>
         </button>

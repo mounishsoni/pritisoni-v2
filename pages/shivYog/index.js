@@ -15,9 +15,9 @@ const ShivYog = () => {
       const params = new URLSearchParams(window.location.search);
       const id = params.get("id");
       const { data, error } = await supabase
-        .from("playlist")
+        .from("collection")
         .select("*")
-        .eq("collection_id", id)
+        .eq("category_id", id)
         .order("created_dttm", { ascending: false });
       if (error) {
         console.error("Error fetching data:", error);

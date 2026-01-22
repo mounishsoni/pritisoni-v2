@@ -13,9 +13,9 @@ const ReikiHealing = () => {
     // fetch video data
     try {
       const { data, error } = await supabase
-        .from("playlist")
+        .from("collection")
         .select("*")
-        .eq("collection_id", "53a0fc7a-50ef-4b4d-ac2a-a374dd859566")
+        .eq("category_id", "53a0fc7a-50ef-4b4d-ac2a-a374dd859566")
         .order("created_dttm", { ascending: false });
       if (error) {
         console.error("Error fetching data:", error);

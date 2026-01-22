@@ -13,9 +13,9 @@ const SaundaryaLehri = () => {
     // fetch video data
     try {
       const { data, error } = await supabase
-        .from("playlist")
+        .from("collection")
         .select("*")
-        .eq("collection_id", "6fc58495-e61f-4cbd-8f04-5a183f1beab3")
+        .eq("category_id", "6fc58495-e61f-4cbd-8f04-5a183f1beab3")
         .order("created_dttm", { ascending: false });
       if (error) {
         console.error("Error fetching data:", error);
