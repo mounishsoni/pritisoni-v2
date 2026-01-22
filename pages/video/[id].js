@@ -83,10 +83,6 @@ const Video = () => {
     },
   };
 
-  const saveToPlaylist = (item) => {
-    toast.current.show({ severity: "success", summary: "Success", detail: item.title });
-  };
-
   const items = [
     {
       // label: "Options",
@@ -130,8 +126,21 @@ const Video = () => {
         {
           label: "Save to playlist",
           icon: "pi pi-bookmark",
-          command: () => {
-            saveToPlaylist(item);
+          command: async () => {
+            const { data: playlistData, error: e } = await supabase.from("playlist").select("playlist_id").eq("collection_id", selectedVideoItem.collection_id).eq("user_id", user.id);
+
+            if (playlistData && playlistData.length > 0) {
+              toast.current.show({ severity: "info", summary: "Info", detail: "Video already added to playlist" });
+            } else {
+              const { data, error } = await supabase.from("playlist").insert({
+                collection_id: selectedVideoItem.collection_id,
+                user_id: user.id,
+                // folder_name: ,
+                // updt_ver_num: 0, // TODO: future update
+                updated_dttm: new Date(),
+              });
+              toast.current.show({ severity: "success", summary: "Success", detail: "Video saved to playlist" });
+            }
           },
         },
         {

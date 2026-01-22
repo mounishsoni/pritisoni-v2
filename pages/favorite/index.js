@@ -142,7 +142,7 @@ const favorite = () => {
     console.log(user);
     // fetch video data
     try {
-      const { data, error } = await supabase.from("collection_view").select("*").eq("user_id", user.id).eq("is_favorite", true).order("favorite_created_dttm", { ascending: false });
+      const { data, error } = await supabase.from("favorite_view").select("*").eq("user_id", user.id).eq("is_favorite", true).order("favorite_created_dttm", { ascending: false });
       if (error) {
         console.error("Error fetching data:", error);
       } else {
