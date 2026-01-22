@@ -193,6 +193,8 @@ const playlist = () => {
       <Toast ref={toast} appendTo={null} />
 
       <Card style={{ height: "calc(100vh - 17rem)", overflowX: "scroll" }}>
+        <h5>Playlist</h5>
+
         <div className="grid">
           {Array.from(playlistData).map((item) => (
             <div className="col-12 md:col-6 lg:col-3">

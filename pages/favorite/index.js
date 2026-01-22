@@ -193,6 +193,7 @@ const favorite = () => {
       <Toast ref={toast} appendTo={null} />
 
       <Card style={{ height: "calc(100vh - 17rem)", overflowX: "scroll" }}>
+        <h5>Favorite</h5>
         <div className="grid">
           {Array.from(favoriteVideoData).map((item) => (
             <div className="col-12 md:col-6 lg:col-3">
