@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPlayListData, setUserData } from "../../features/slice/initialStatesSlice";
 import { SplitButton } from "primereact/splitbutton";
 import { Menu } from "primereact/menu";
+import { Divider } from 'primereact/divider';
 
 const playlist = () => {
   const toast = useRef(null);
@@ -194,6 +195,7 @@ const playlist = () => {
 
       <Card style={{ height: "calc(100vh - 17rem)", overflowX: "scroll" }}>
         <h5>Playlist</h5>
+        <Divider />
 
         <div className="grid">
           {Array.from(playlistData).map((item) => (
