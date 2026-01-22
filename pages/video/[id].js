@@ -130,7 +130,7 @@ const Video = () => {
             const { data: playlistData, error: e } = await supabase.from("playlist").select("playlist_id").eq("collection_id", selectedVideoItem.collection_id).eq("user_id", user.id);
 
             if (playlistData && playlistData.length > 0) {
-              toast.current.show({ severity: "info", summary: "Info", detail: "Video already added to playlist" });
+              toast.current.show({ severity: "info", summary: "Info", detail: "Video already saved to playlist" });
             } else {
               const { data, error } = await supabase.from("playlist").insert({
                 collection_id: selectedVideoItem.collection_id,
@@ -146,8 +146,20 @@ const Video = () => {
         {
           label: "Save to Watch later",
           icon: "pi pi-clock",
-          command: () => {
-            toast.current.show({ severity: "info", summary: "Info", detail: "Video saved to watch later" });
+          command: async () => {
+            const { data: watchLaterData, error: e } = await supabase.from("watch_later").select("watch_later_id").eq("collection_id", selectedVideoItem.collection_id).eq("user_id", user.id);
+
+            if (watchLaterData && watchLaterData.length > 0) {
+              toast.current.show({ severity: "info", summary: "Info", detail: "Video already saved to Watch Later" });
+            } else {
+              const { data, error } = await supabase.from("watch_later").insert({
+                collection_id: selectedVideoItem.collection_id,
+                user_id: user.id,
+                // updt_ver_num: 0, // TODO: future update
+                updated_dttm: new Date(),
+              });
+              toast.current.show({ severity: "success", summary: "Success", detail: "Video saved to Watch Later" });
+            }
           },
         },
         {
