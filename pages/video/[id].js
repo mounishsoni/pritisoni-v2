@@ -419,9 +419,9 @@ const Video = () => {
             itemTemplate={listItemTemplate} // Required: The function that renders each item
             header={header} // Optional: Header content (e.g., layout switch)
           /> */}
-        <div className="grid">
+        <div className="flex flex-grow flex-wrap">
           {Array.from(videoListData).map((item) => (
-            <div className="col-12 md:col-6 lg:col-3">
+            <div className="col-6 md:col-4 xl:col-3">
               <Card
                 className="align-items-center justify-content-center bg-primary font-bold m-2"
                 header={cardHeader(item)}
@@ -429,15 +429,15 @@ const Video = () => {
                 // subTitle={item.description}
                 // style={{ width: "450px" }}
               >
-                <div class="grid">
-                  <div class="col-10 sm:col-10 md:col-8 lg:col-10">
+                <div class="flex justify-content-between">
+                  <div class="col-9 flex flex-column gap-1">
                     <div className="text-lg text-overflow-ellipsis white-space-nowrap overflow-hidden tooltip-show-full-title-card" data-pr-tooltip={item.title}>
                       {item.title}
+                      <Tooltip target=".tooltip-show-full-title-card" mouseTrack mouseTrackLeft={10} />
                     </div>
-                    <Tooltip target=".tooltip-show-full-title-card" mouseTrack mouseTrackLeft={10} />
                     <div className="font-italic">{item.description}</div>
                   </div>
-                  <div class="col-2 sm:col-1 md:col-1 lg:col-1">
+                  <div>
                     <Menu model={items} popup ref={menuRight} id="popup_menu_right" popupAlignment="right" />
                     <Button
                       className=""

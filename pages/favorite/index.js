@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPlayListData, setUserData } from "../../features/slice/initialStatesSlice";
 import { SplitButton } from "primereact/splitbutton";
 import { Menu } from "primereact/menu";
-import { Divider } from 'primereact/divider';
+import { Divider } from "primereact/divider";
 
 const favorite = () => {
   const toast = useRef(null);
@@ -140,7 +140,6 @@ const favorite = () => {
   ];
 
   async function fetchFavoriteVideo() {
-    console.log(user);
     // fetch video data
     try {
       const { data, error } = await supabase.from("favorite_view").select("*").eq("user_id", user.id).eq("is_favorite", true).order("favorite_created_dttm", { ascending: false });
@@ -168,8 +167,10 @@ const favorite = () => {
   }
 
   useEffect(() => {
-    fetchFavoriteVideo();
-  }, []);
+    if (user && user.id !== "") {
+      fetchFavoriteVideo();
+    }
+  }, [user]);
 
   function playSelectedVideo(video) {
     setSelectedVideoId(video.videoId);

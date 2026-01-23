@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPlayListData, setUserData } from "../../features/slice/initialStatesSlice";
 import { SplitButton } from "primereact/splitbutton";
 import { Menu } from "primereact/menu";
-import { Divider } from 'primereact/divider';
+import { Divider } from "primereact/divider";
 
 const watchLater = () => {
   const toast = useRef(null);
@@ -169,8 +169,10 @@ const watchLater = () => {
   }
 
   useEffect(() => {
-    fetchWatchLater();
-  }, []);
+    if (user && user.id !== "") {
+      fetchWatchLater();
+    }
+  }, [user]);
 
   function playSelectedVideo(video) {
     setSelectedVideoId(video.videoId);
