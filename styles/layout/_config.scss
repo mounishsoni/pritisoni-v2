@@ -92,7 +92,7 @@
     position: fixed;
     height: 10rem;
     width: 100vw;
-    background: lightblue;
+    background: #c1d8f0;
     bottom: 0;
     transition: background-color var(--transition-duration);
     overflow: hidden;
@@ -101,7 +101,7 @@
     box-shadow: -.25rem 0 1rem rgba(0, 0, 0, .15);
 
     &:hover {
-        background: blue;
+        background: #e1f1fd;
     }
 }
 
