@@ -426,7 +426,7 @@ const Video = () => {
           {Array.from(videoListData).map((item) => (
             <div className="col-6 md:col-4 xl:col-3 card-wrapper">
               <Card
-                className="interactive-card align-items-center justify-content-center bg-primary font-bold m-2"
+                className="interactive-card align-items-center justify-content-center bg-primary m-2"
                 header={cardHeader(item)}
                 // title={item.title}
                 // subTitle={item.description}
@@ -434,7 +434,7 @@ const Video = () => {
               >
                 <div class="flex justify-content-between">
                   <div class="col-9 flex flex-column gap-1">
-                    <div className="text-lg text-overflow-ellipsis white-space-nowrap overflow-hidden tooltip-show-full-title-card" data-pr-tooltip={item.title}>
+                    <div className="text-lg font-bold text-overflow-ellipsis white-space-nowrap overflow-hidden tooltip-show-full-title-card" data-pr-tooltip={item.title}>
                       {item.title}
                       <Tooltip target=".tooltip-show-full-title-card" mouseTrack mouseTrackLeft={10} />
                     </div>
