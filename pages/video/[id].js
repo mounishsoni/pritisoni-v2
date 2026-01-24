@@ -359,14 +359,17 @@ const Video = () => {
 
   const cardHeader = (item) => {
     return (
-      <img
-        className="w-full shadow-2 border-round"
-        src={`https://img.youtube.com/vi/${item.videoId}/0.jpg`}
-        alt={item.title}
+      <div
+        className="card-image-container"
         onClick={() => {
           playSelectedVideo(item);
         }}
-      />
+      >
+        <img className="w-full shadow-2 border-round" src={`https://img.youtube.com/vi/${item.videoId}/0.jpg`} alt={item.title} />
+        <div className="image-overlay">
+          <Button icon="pi pi-play" rounded raised className="p-button-lg play-btn" />
+        </div>
+      </div>
     );
   };
 
@@ -421,9 +424,9 @@ const Video = () => {
           /> */}
         <div className="flex flex-grow flex-wrap">
           {Array.from(videoListData).map((item) => (
-            <div className="col-6 md:col-4 xl:col-3">
+            <div className="col-6 md:col-4 xl:col-3 card-wrapper">
               <Card
-                className="align-items-center justify-content-center bg-primary font-bold m-2"
+                className="interactive-card align-items-center justify-content-center bg-primary font-bold m-2"
                 header={cardHeader(item)}
                 // title={item.title}
                 // subTitle={item.description}
