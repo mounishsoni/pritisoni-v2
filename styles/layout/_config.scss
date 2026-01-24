@@ -122,7 +122,7 @@
 // Start of block CSS is for Video pages which shows each card hover over effects
 .card-wrapper {
     position: relative; /* Needed for the absolute background layer */
-    padding: 1rem;
+    padding: 0.5rem;
     display: inline-block;
     overflow: hidden; /* Ensures the zoom stays within the 2rem bounds */
     border-radius: 16px;
