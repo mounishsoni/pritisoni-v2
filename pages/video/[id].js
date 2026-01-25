@@ -16,12 +16,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPlayListData, setUserData } from "../../features/slice/initialStatesSlice";
 import { SplitButton } from "primereact/splitbutton";
 import { Menu } from "primereact/menu";
+import PlaylistPopup from "../../components/PlaylistPopup/PlaylistPopup";
 
 const Video = () => {
   const [videoListData, setVideoListData] = useState([]);
   const [selectedVideoItem, setSelectedVideoItem] = useState([]);
   const [collectionId, setcollectionId] = useState(null);
   const [playNextVideoListData, setPlayNextVideoListData] = useState([]);
+  const [playlistPopupVisible, setPlaylistPopupVisible] = useState(null);
 
   const router = useRouter();
   const user = useSelector((state) => state.initialState.user);
@@ -125,22 +127,36 @@ const Video = () => {
         },
         {
           label: "Save to playlist",
-          icon: "pi pi-bookmark",
+          template: (item, options) => {
+            return (
+              <div
+                className="p-menuitem-content"
+                onClick={() => {
+                  setPlaylistPopupVisible(true);
+                }}
+              >
+                <a href="#" className="p-menuitem-link">
+                  <i className="p-menuitem-icon pi pi-bookmark"></i>
+                  <span className="p-menuitem-text">{item.label}</span>
+                </a>
+              </div>
+            );
+          },
           command: async () => {
-            const { data: playlistData, error: e } = await supabase.from("playlist").select("playlist_id").eq("collection_id", selectedVideoItem.collection_id).eq("user_id", user.id);
-
-            if (playlistData && playlistData.length > 0) {
-              toast.current.show({ severity: "info", summary: "Info", detail: "Video already saved to playlist" });
-            } else {
-              const { data, error } = await supabase.from("playlist").insert({
-                collection_id: selectedVideoItem.collection_id,
-                user_id: user.id,
-                // folder_name: ,
-                // updt_ver_num: 0, // TODO: future update
-                updated_dttm: new Date(),
-              });
-              toast.current.show({ severity: "success", summary: "Success", detail: "Video saved to playlist" });
-            }
+            console.log(selectedVideoDetails);
+            // const { data: playlistData, error: e } = await supabase.from("playlist").select("playlist_id").eq("collection_id", selectedVideoItem.collection_id).eq("user_id", user.id);
+            // if (playlistData && playlistData.length > 0) {
+            //   toast.current.show({ severity: "info", summary: "Info", detail: "Video already saved to playlist" });
+            // } else {
+            //   const { data, error } = await supabase.from("playlist").insert({
+            //     collection_id: selectedVideoItem.collection_id,
+            //     user_id: user.id,
+            //     // folder_name: ,
+            //     // updt_ver_num: 0, // TODO: future update
+            //     updated_dttm: new Date(),
+            //   });
+            //   toast.current.show({ severity: "success", summary: "Success", detail: "Video saved to playlist" });
+            // }
           },
         },
         {
@@ -376,6 +392,7 @@ const Video = () => {
   return (
     <>
       <Toast ref={toast} appendTo={null} />
+      <PlaylistPopup isOpen={playlistPopupVisible} onClose={() => setPlaylistPopupVisible(false)} />
 
       <Card style={{ height: "calc(100vh - 17rem)", overflowX: "scroll" }}>
         {/* <div className="w-6" style={{ overflow: "scroll", position: "sticky", top: "10px" }}>
