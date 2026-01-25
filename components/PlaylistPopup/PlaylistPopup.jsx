@@ -1,21 +1,69 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Checkbox } from "primereact/checkbox";
 import { Dialog } from "primereact/dialog"; // Proper modal component
 import { Ripple } from "primereact/ripple";
+import { useSelector } from "react-redux";
+import { supabase } from "../../config/supabaseClient";
 
-export default function PlaylistPopup({ isOpen, onClose }) {
-  const [playlists, setPlaylists] = useState([
-    { id: 1, name: "My Favorites", count: 34, selected: false },
-    { id: 2, name: "Workout Mix", count: 12, selected: true },
-    { id: 3, name: "Chill Vibes", count: 28, selected: false },
-    { id: 4, name: "Road Trip Anthems", count: 15, selected: false },
-  ]);
+export default function PlaylistPopup({ playlistPopupVisible, onClose, selectedVideoItem }) {
+  const user = useSelector((state) => state.initialState.user);
+
+  //   const [playlists, setPlaylists] = useState([
+  //     { id: 1, name: "My Favorites", count: 34, selected: false },
+  //     { id: 2, name: "Workout Mix", count: 12, selected: true },
+  //     { id: 3, name: "Chill Vibes", count: 28, selected: false },
+  //     { id: 4, name: "Road Trip Anthems", count: 15, selected: false },
+  //   ]);
+
+  const [playlists, setPlaylists] = useState([]);
 
   const [isCreating, setIsCreating] = useState(false);
   const [newName, setNewName] = useState("");
   const [isPublic, setIsPublic] = useState(true);
+
+  async function fetchPlaylistData() {
+    // fetch playlist data
+    try {
+      const { data, error } = await supabase.from("unique_playlist_view").select("*").eq("user_id", user.id);
+      if (error) {
+        console.error("Error fetching data:", error);
+      } else {
+        const prepPlaylists = [];
+        for (var i = 0; i < data.length; i++) {
+          prepPlaylists.push({
+            id: i + 1,
+            name: data[i].folder_name,
+            count: data[i].total_collection,
+            selected: selectedVideoItem && Object.keys(selectedVideoItem).length > 0 ? data[i].collection_id.includes(selectedVideoItem.collection_id) : false,
+          });
+        }
+        setPlaylists(prepPlaylists);
+      }
+    } catch (e) {
+      // todo: add new error toast...
+      //   toast.error(
+      //     "System is unavailable.  Unable to fetch Client Data.  Please try again later or contact tech support!",
+      //     {
+      //       position: "bottom-right",
+      //       autoClose: false,
+      //       hideProgressBar: false,
+      //       closeOnClick: true,
+      //       pauseOnHover: true,
+      //       draggable: true,
+      //       progress: undefined,
+      //       theme: "colored",
+      //     }
+      //   );
+    }
+  }
+
+  useEffect(() => {
+    if (playlistPopupVisible && user && user.id !== "") {
+      fetchPlaylistData();
+    }
+  }, [playlistPopupVisible]);
 
   const togglePlaylist = (id) => {
     setPlaylists(playlists.map((p) => (p.id === id ? { ...p, selected: !p.selected } : p)));
@@ -46,12 +94,7 @@ export default function PlaylistPopup({ isOpen, onClose }) {
           <InputText autoFocus placeholder="Enter title..." className="w-full p-inputtext-sm" value={newName} onChange={(e) => setNewName(e.target.value)} />
         </div>
         <div className="flex align-items-center justify-content-between">
-          <Button
-            icon={isPublic ? "pi pi-globe" : "pi pi-lock"}
-            label={isPublic ? "Public" : "Private"}
-            className=" p-button-secondary p-button-sm h-auto"
-            onClick={() => setIsPublic(!isPublic)}
-          />
+          <Button icon={isPublic ? "pi pi-globe" : "pi pi-lock"} label={isPublic ? "Public" : "Private"} className=" p-button-secondary p-button-sm h-auto" onClick={() => setIsPublic(!isPublic)} />
           <div className="flex gap-2">
             <Button label="Cancel" className="p-button-text p-button-secondary p-button-sm" onClick={() => setIsCreating(false)} />
             <Button label="Create" className="p-button-sm" onClick={handleCreate} disabled={!newName.trim()} />
@@ -64,7 +107,7 @@ export default function PlaylistPopup({ isOpen, onClose }) {
   return (
     <Dialog
       header="Save to..."
-      visible={isOpen}
+      visible={playlistPopupVisible}
       style={{ width: "380px" }}
       onHide={onClose} // This is the built-in onClose trigger
       footer={renderFooter()}

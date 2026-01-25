@@ -140,7 +140,6 @@ const playlist = () => {
   ];
 
   async function fetchPlaylist() {
-    console.log(user);
     // fetch video data
     try {
       const { data, error } = await supabase.from("playlist_view").select("*").eq("user_id", user.id);
