@@ -392,7 +392,12 @@ const Video = () => {
   return (
     <>
       <Toast ref={toast} appendTo={null} />
-      <PlaylistPopup playlistPopupVisible={playlistPopupVisible} onClose={() => setPlaylistPopupVisible(false)} selectedVideoItem={selectedVideoItem} />
+      <PlaylistPopup
+        playlistPopupVisible={playlistPopupVisible}
+        setPlaylistPopupVisible={setPlaylistPopupVisible}
+        onClose={() => setPlaylistPopupVisible(false)}
+        selectedVideoItem={selectedVideoItem}
+      />
 
       <Card style={{ height: "calc(100vh - 17rem)", overflowX: "scroll" }}>
         {/* <div className="w-6" style={{ overflow: "scroll", position: "sticky", top: "10px" }}>

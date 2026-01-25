@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Checkbox } from "primereact/checkbox";
@@ -6,9 +6,11 @@ import { Dialog } from "primereact/dialog"; // Proper modal component
 import { Ripple } from "primereact/ripple";
 import { useSelector } from "react-redux";
 import { supabase } from "../../config/supabaseClient";
+import { Toast } from "primereact/toast";
 
-export default function PlaylistPopup({ playlistPopupVisible, onClose, selectedVideoItem }) {
+export default function PlaylistPopup({ playlistPopupVisible, setPlaylistPopupVisible, onClose, selectedVideoItem }) {
   const user = useSelector((state) => state.initialState.user);
+  const toast = useRef(null);
 
   //   const [playlists, setPlaylists] = useState([
   //     { id: 1, name: "My Favorites", count: 34, selected: false },
@@ -65,8 +67,36 @@ export default function PlaylistPopup({ playlistPopupVisible, onClose, selectedV
     }
   }, [playlistPopupVisible]);
 
-  const togglePlaylist = (id) => {
+  const togglePlaylist = async (id) => {
     setPlaylists(playlists.map((p) => (p.id === id ? { ...p, selected: !p.selected } : p)));
+
+    // console.log("playlists[id].selected", playlists[id - 1].selected);
+
+    if (playlists[id - 1].selected) {
+      const { error } = await supabase
+        .from("playlist")
+        .delete()
+        .eq("collection_id", selectedVideoItem.collection_id)
+        .eq("user_id", user.id)
+        .eq("folder_name", playlists[id - 1].name);
+
+      if (error) {
+        console.error("Error deleting:", error);
+      } else {
+        toast.current.show({ severity: "info", summary: "Info", detail: "Video removed from " + playlists[id - 1].name });
+        setPlaylistPopupVisible(false);
+      }
+    } else {
+      const { data, error } = await supabase.from("playlist").insert({
+        collection_id: selectedVideoItem.collection_id,
+        user_id: user.id,
+        folder_name: playlists[id - 1].name,
+        // updt_ver_num: 0, // TODO: future update
+        updated_dttm: new Date(),
+      });
+      toast.current.show({ severity: "success", summary: "Success", detail: "Video saved to " + playlists[id - 1].name });
+      setPlaylistPopupVisible(false);
+    }
   };
 
   const handleCreate = () => {
@@ -105,39 +135,43 @@ export default function PlaylistPopup({ playlistPopupVisible, onClose, selectedV
   };
 
   return (
-    <Dialog
-      header="Save to..."
-      visible={playlistPopupVisible}
-      style={{ width: "380px" }}
-      onHide={onClose} // This is the built-in onClose trigger
-      footer={renderFooter()}
-      draggable={false}
-      resizable={false}
-      closable={true} // Shows the 'X' icon in the header
-      dismissableMask={false} // Closes when clicking outside (the overlay)
-      className="playlist-dialog"
-    >
-      <div className="overflow-y-auto" style={{ maxHeight: "300px" }}>
-        {playlists.map((playlist) => (
-          <div
-            key={playlist.id}
-            onClick={() => togglePlaylist(playlist.id)}
-            className="p-ripple flex align-items-center justify-content-between p-3 mb-1 border-round-lg cursor-pointer transition-colors transition-duration-150 hover:surface-100"
-          >
-            <Ripple />
-            <div className="flex align-items-center gap-3">
-              <div className="w-3rem h-3rem surface-100 border-round flex align-items-center justify-content-center">
-                <i className="pi pi-folder text-400 text-2xl"></i>
+    <>
+      <Toast ref={toast} appendTo={null} />
+
+      <Dialog
+        header="Save to..."
+        visible={playlistPopupVisible}
+        style={{ width: "380px" }}
+        onHide={onClose} // This is the built-in onClose trigger
+        footer={renderFooter()}
+        draggable={false}
+        resizable={false}
+        closable={true} // Shows the 'X' icon in the header
+        dismissableMask={false} // Closes when clicking outside (the overlay)
+        className="playlist-dialog"
+      >
+        <div className="overflow-y-auto" style={{ maxHeight: "300px" }}>
+          {playlists.map((playlist) => (
+            <div
+              key={playlist.id}
+              onClick={() => togglePlaylist(playlist.id)}
+              className="p-ripple flex align-items-center justify-content-between p-3 mb-1 border-round-lg cursor-pointer transition-colors transition-duration-150 hover:surface-100"
+            >
+              <Ripple />
+              <div className="flex align-items-center gap-3">
+                <div className="w-3rem h-3rem surface-100 border-round flex align-items-center justify-content-center">
+                  <i className="pi pi-folder text-400 text-2xl"></i>
+                </div>
+                <div className="flex flex-column">
+                  <span className="font-semibold text-800">{playlist.name}</span>
+                  <span className="text-xs text-500">{playlist.count} videos</span>
+                </div>
               </div>
-              <div className="flex flex-column">
-                <span className="font-semibold text-800">{playlist.name}</span>
-                <span className="text-xs text-500">{playlist.count} videos</span>
-              </div>
+              <Checkbox checked={playlist.selected} readOnly />
             </div>
-            <Checkbox checked={playlist.selected} readOnly />
-          </div>
-        ))}
-      </div>
-    </Dialog>
+          ))}
+        </div>
+      </Dialog>
+    </>
   );
 }
