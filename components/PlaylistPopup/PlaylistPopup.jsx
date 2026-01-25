@@ -87,24 +87,50 @@ export default function PlaylistPopup({ playlistPopupVisible, setPlaylistPopupVi
         setPlaylistPopupVisible(false);
       }
     } else {
-      const { data, error } = await supabase.from("playlist").insert({
-        collection_id: selectedVideoItem.collection_id,
-        user_id: user.id,
-        folder_name: playlists[id - 1].name,
-        // updt_ver_num: 0, // TODO: future update
-        updated_dttm: new Date(),
-      });
-      toast.current.show({ severity: "success", summary: "Success", detail: "Video saved to " + playlists[id - 1].name });
-      setPlaylistPopupVisible(false);
+      const { data, error } = await supabase
+        .from("playlist")
+        .insert({
+          collection_id: selectedVideoItem.collection_id,
+          user_id: user.id,
+          folder_name: playlists[id - 1].name,
+          // updt_ver_num: 0, // TODO: future update
+          updated_dttm: new Date(),
+        })
+        .select();
+
+      if (data) {
+        toast.current.show({ severity: "success", summary: "Success", detail: "Video saved to " + playlists[id - 1].name });
+        setPlaylistPopupVisible(false);
+      } else {
+        toast.current.show({ severity: "error", summary: "Error", detail: "Error while saving video to " + playlists[id - 1].name });
+      }
     }
   };
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!newName.trim()) return;
-    const newEntry = { id: Date.now(), name: newName, count: 0, selected: true };
-    setPlaylists([...playlists, newEntry]);
-    setNewName("");
-    setIsCreating(false);
+    // const newEntry = { id: Date.now(), name: newName, count: 0, selected: true };
+    // setPlaylists([...playlists, newEntry]);
+    const { data, error } = await supabase
+      .from("playlist")
+      .insert({
+        collection_id: selectedVideoItem.collection_id,
+        user_id: user.id,
+        folder_name: newName,
+        privacy: isPublic ? "Public" : "Private",
+        // updt_ver_num: 0, // TODO: future update
+        updated_dttm: new Date(),
+      })
+      .select();
+
+    if (data) {
+      toast.current.show({ severity: "success", summary: "Success", detail: "Video saved to " + newName });
+      setNewName("");
+      setIsCreating(false);
+      setPlaylistPopupVisible(false);
+    } else {
+      toast.current.show({ severity: "error", summary: "Error", detail: "Error while saving video to " + newName });
+    }
   };
 
   // Footer template for the Dialog
@@ -124,7 +150,14 @@ export default function PlaylistPopup({ playlistPopupVisible, setPlaylistPopupVi
           <InputText autoFocus placeholder="Enter title..." className="w-full p-inputtext-sm" value={newName} onChange={(e) => setNewName(e.target.value)} />
         </div>
         <div className="flex align-items-center justify-content-between">
-          <Button icon={isPublic ? "pi pi-globe" : "pi pi-lock"} label={isPublic ? "Public" : "Private"} className=" p-button-secondary p-button-sm h-auto" onClick={() => setIsPublic(!isPublic)} />
+          <Button
+            icon={isPublic ? "pi pi-globe" : "pi pi-lock"}
+            label={isPublic ? "Public" : "Private"}
+            className=" p-button-secondary p-button-sm h-auto"
+            onClick={() => {
+              setIsPublic(!isPublic);
+            }}
+          />
           <div className="flex gap-2">
             <Button label="Cancel" className="p-button-text p-button-secondary p-button-sm" onClick={() => setIsCreating(false)} />
             <Button label="Create" className="p-button-sm" onClick={handleCreate} disabled={!newName.trim()} />
