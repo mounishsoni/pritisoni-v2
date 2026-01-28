@@ -183,7 +183,7 @@ export default function PlaylistPopup({ playlistPopupVisible, setPlaylistPopupVi
         dismissableMask={false} // Closes when clicking outside (the overlay)
         className="playlist-dialog"
       >
-        <div className="overflow-y-auto" style={{ maxHeight: "300px" }}>
+        <div className="overflow-y-auto" style={{ maxHeight: "320px" }}>
           {playlists.map((playlist) => (
             <div
               key={playlist.id}
