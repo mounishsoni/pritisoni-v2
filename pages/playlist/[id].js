@@ -178,7 +178,7 @@ const playlistCollection = () => {
   useEffect(() => {
     if (user && user.id !== "" && folderName && folderName !== "") {
       fetchPlaylist();
-      console.log("Folder Name From Query URL...", folderName)
+      console.log("Folder Name From Query URL...", folderName);
     }
   }, [folderName, user]);
 
@@ -205,7 +205,9 @@ const playlistCollection = () => {
       <Toast ref={toast} appendTo={null} />
 
       <Card style={{ height: "calc(100vh - 17rem)", overflowX: "scroll" }}>
-        <h5>Playlist name</h5>
+        <h5>
+          Playlist {" / "} {router.query.id}
+        </h5>
         <Divider />
 
         <div className="flex flex-grow flex-wrap">
