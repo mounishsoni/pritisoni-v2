@@ -6,13 +6,22 @@ import { Knob } from "primereact/knob";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { VibrateIcon, VibrateOffIcon } from "lucide-react";
+import { useSelector } from "react-redux";
+import { supabase } from "../../config/supabaseClient";
 
 export default function MantraWatch() {
+  const user = useSelector((state) => state.initialState.user);
+
   const toast = useRef(null);
 
   // --- State ---
   const [mantras, setMantras] = useState(0);
   const [malas, setMalas] = useState(0);
+
+  // Temporary states for the input fields before "Set" is clicked
+  const [tempMantra, setTempMantra] = useState(108);
+  const [tempMala, setTempMala] = useState(1);
+
   const [showSuccess, setShowSuccess] = useState(false);
   const [hapticEnabled, setHapticEnabled] = useState(true);
 
@@ -33,16 +42,167 @@ export default function MantraWatch() {
     if (isGoalAchieved) setShowSuccess(true);
   }, [isGoalAchieved]);
 
-  // --- Reset Handlers ---
-  const resetMantrasOnly = () => setMantras(0);
-  const resetMalasOnly = () => {
-    setMalas(0);
-    setShowSuccess(false);
+  // --- Handlers ---
+  const handleSetMantra = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("users_mantra")
+        .upsert(
+          {
+            updated_dttm: new Date(),
+            mantra_target: tempMantra,
+            user_id: user.id,
+          },
+          { onConflict: "user_id" }, // Use a comma-separated string for multiple column check
+        )
+        .select();
+
+      if (data) {
+        setMantraTarget(data[0].mantra_target);
+        toast.current.show({ severity: "success", summary: "Updated", detail: `Mantra target set to ${data[0].mantra_target}`, life: 1500 });
+      } else {
+        // open toast
+        toast.current.show({ severity: "error", summary: "Error", detail: `Error while updating Mantra target`, life: 1500 });
+      }
+    } catch (err) {
+      // open toast
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Error while updating Mantra Target, Please try again later or contact tech support",
+      });
+    }
   };
-  const resetAll = () => {
-    setMantras(0);
-    setMalas(0);
-    setShowSuccess(false);
+
+  const handleSetMala = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("users_mantra")
+        .upsert(
+          {
+            updated_dttm: new Date(),
+            mala_target: tempMala,
+            user_id: user.id,
+          },
+          { onConflict: "user_id" }, // Use a comma-separated string for multiple column check
+        )
+        .select();
+
+      if (data) {
+        setMalaTarget(data[0].mala_target);
+        toast.current.show({ severity: "success", summary: "Updated", detail: `Mala target set to ${data[0].mala_target}`, life: 1500 });
+      } else {
+        // open toast
+        toast.current.show({ severity: "error", summary: "Error", detail: `Error while updating Mantra target`, life: 1500 });
+      }
+    } catch (err) {
+      // open toast
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Error while updating Mala Target, Please try again later or contact tech support",
+      });
+    }
+  };
+
+  // --- Reset Handlers ---
+  const resetMantrasOnly = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("users_mantra")
+        .upsert(
+          {
+            updated_dttm: new Date(),
+            current_japa: 0,
+            user_id: user.id,
+          },
+          { onConflict: "user_id" }, // Use a comma-separated string for multiple column check
+        )
+        .select();
+
+      if (data) {
+        setMantras(data[0].current_japa);
+        toast.current.show({ severity: "success", summary: "Updated", detail: `Current Japa resetted to ${data[0].current_japa}`, life: 1500 });
+      } else {
+        // open toast
+        toast.current.show({ severity: "error", summary: "Error", detail: `Error while resetting Current Japa`, life: 1500 });
+      }
+    } catch (err) {
+      // open toast
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Error while resetting Current Japa, Please try again later or contact tech support",
+      });
+    }
+  };
+
+  const resetMalasOnly = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("users_mantra")
+        .upsert(
+          {
+            updated_dttm: new Date(),
+            total_mala: 0,
+            user_id: user.id,
+            goal_achieved: false,
+          },
+          { onConflict: "user_id" }, // Use a comma-separated string for multiple column check
+        )
+        .select();
+
+      if (data) {
+        setMalas(data[0].total_mala);
+        setShowSuccess(data[0].goal_achieved);
+        toast.current.show({ severity: "success", summary: "Updated", detail: `Total Mala resetted to ${data[0].total_mala}`, life: 1500 });
+      } else {
+        // open toast
+        toast.current.show({ severity: "error", summary: "Error", detail: `Error while resetting Total Mala`, life: 1500 });
+      }
+    } catch (err) {
+      // open toast
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Error while resetting Total Mala, Please try again later or contact tech support",
+      });
+    }
+  };
+
+  const resetAll = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("users_mantra")
+        .upsert(
+          {
+            updated_dttm: new Date(),
+            total_mala: 0,
+            current_japa: 0,
+            user_id: user.id,
+            goal_achieved: false,
+          },
+          { onConflict: "user_id" }, // Use a comma-separated string for multiple column check
+        )
+        .select();
+
+      if (data) {
+        setMalas(data[0].total_mala);
+        setMantras(data[0].current_japa);
+        setShowSuccess(data[0].goal_achieved);
+        toast.current.show({ severity: "success", summary: "Updated", detail: `EVERYTHING resetted`, life: 1500 });
+      } else {
+        // open toast
+        toast.current.show({ severity: "error", summary: "Error", detail: `Error while resetting EVERYTHING`, life: 1500 });
+      }
+    } catch (err) {
+      // open toast
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Error while resetting EVERYTHING, Please try again later or contact tech support",
+      });
+    }
   };
 
   const confirmReset = (message, acceptCallback) => {
@@ -80,7 +240,7 @@ export default function MantraWatch() {
 
   return (
     <div className="flex flex-column align-items-center justify-content-center text-gray-100 p-3" style={{ minHeight: "calc(100vh - 9rem)" }}>
-      <Toast ref={toast} position="bottom-center" />
+      <Toast ref={toast} />
       <ConfirmDialog />
 
       {/* Top Utility Bar */}
@@ -164,24 +324,32 @@ export default function MantraWatch() {
         {/* Target Settings */}
         <div className="flex gap-2 justify-content-between w-full border-top-1 border-gray-700 pt-4">
           <div className="flex flex-column align-items-center gap-2">
-            <label className="text-l text-700 font-bold uppercase">Mantra Goal</label>
-            <InputNumber
-              value={mantraTarget}
-              onValueChange={(e) => setMantraTarget(e.value || 1)}
-              inputClassName="bg-gray-800 text-white border-gray-700 text-center w-8rem p-2 text-xl"
-              disabled={isGoalAchieved}
-            />
+            <label className="text-l text-700 font-bold uppercase">Mantra Target</label>
+            <div className="p-inputgroup flex-1">
+              <InputNumber
+                // placeholder="Vote"
+                value={mantraTarget}
+                onValueChange={(e) => setTempMantra(e.value || 1)}
+                inputClassName="bg-gray-800 text-white border-gray-700 text-center w-6rem p-2 text-xl"
+                disabled={isGoalAchieved}
+              />
+              <Button icon="pi pi-check" className="p-button-warning" onClick={handleSetMantra} disabled={isGoalAchieved} />
+            </div>
             <Button icon="pi pi-refresh" label="Reset Japa" className="p-button-sm p-button-text p-button-secondary" onClick={() => confirmReset("Reset current Japa?", resetMantrasOnly)} />
           </div>
 
           <div className="flex flex-column align-items-center gap-2">
-            <label className="text-l text-700 font-bold uppercase">Mala Goal</label>
-            <InputNumber
-              value={malaTarget}
-              onValueChange={(e) => setMalaTarget(e.value || 1)}
-              inputClassName="bg-gray-800 text-white border-gray-700 text-center w-8rem p-2 text-xl"
-              disabled={isGoalAchieved}
-            />
+            <label className="text-l text-700 font-bold uppercase">Mala Target</label>
+            <div className="p-inputgroup flex-1">
+              <InputNumber
+                // placeholder="Vote"
+                value={malaTarget}
+                onValueChange={(e) => setTempMala(e.value || 1)}
+                inputClassName="bg-gray-800 text-white border-gray-700 text-center w-6rem p-2 text-xl"
+                disabled={isGoalAchieved}
+              />
+              <Button icon="pi pi-check" className="p-button-warning" onClick={handleSetMala} disabled={isGoalAchieved} />
+            </div>
             <Button icon="pi pi-refresh" label="Reset Mala" className="p-button-sm p-button-text p-button-secondary" onClick={() => confirmReset("Reset Mala count?", resetMalasOnly)} />
           </div>
         </div>
