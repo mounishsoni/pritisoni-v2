@@ -13,8 +13,10 @@ const AppMenu = () => {
   const [fetchedMenuItems, setFetchedMenuItems] = useState([]);
 
   useEffect(() => {
-    fetchMenuItems();
-  }, []);
+    if (user && user.id !== "") {
+      fetchMenuItems();
+    }
+  }, [user]);
 
   async function fetchMenuItems() {
     try {
@@ -48,7 +50,7 @@ const AppMenu = () => {
               title: "Mantra Counter",
               icon: "pi pi-plus-circle",
               to: "/mantra-counter",
-              visible: ["SUPER_ADMIN"].includes(user.role) ? true : false,
+              visible: ["SUPER_ADMIN", "ADMIN"].includes(user.role) ? true : false,
             },
             {
               title: "Admin Panel",
