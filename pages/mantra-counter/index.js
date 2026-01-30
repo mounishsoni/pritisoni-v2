@@ -38,71 +38,84 @@ export default function MantraWatch() {
     }
   }, [mantras, mantraTarget, isGoalAchieved]);
 
-  useEffect(() => {
-    if (isGoalAchieved) setShowSuccess(true);
-  }, [isGoalAchieved]);
-
-  // --- Handlers ---
-  const handleSetMantra = async () => {
+  async function updateCounterGoalStatus() {
     try {
       const { data, error } = await supabase
         .from("users_mantra")
         .upsert(
           {
             updated_dttm: new Date(),
-            mantra_target: tempMantra,
+            goal_achieved: true,
             user_id: user.id,
           },
           { onConflict: "user_id" }, // Use a comma-separated string for multiple column check
         )
         .select();
+
+      if (data) {
+        setShowSuccess(data[0].goal_achieved);
+      } else {
+        // open toast
+        toast.current.show({ severity: "error", summary: "Error", detail: `Error while updating Goal Achievement`, life: 1500 });
+      }
+    } catch (err) {
+      // open toast
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Error while updating Goal Achievement, Please try again later or contact tech support",
+      });
+    }
+  }
+
+  useEffect(() => {
+    if (isGoalAchieved) {
+      updateCounterGoalStatus();
+    }
+  }, [isGoalAchieved]);
+
+  async function fetchAndSetCurrentData() {
+    try {
+      const { data, error } = await supabase.from("users_mantra").select("*").eq("user_id", user.id);
 
       if (data) {
         setMantraTarget(data[0].mantra_target);
-        toast.current.show({ severity: "success", summary: "Updated", detail: `Mantra target set to ${data[0].mantra_target}`, life: 1500 });
+        setMalaTarget(data[0].mala_target);
+
+        setMantras(data[0].current_japa);
+        setMalas(data[0].total_mala);
+
+        setShowSuccess(data[0].goal_achieved);
+        setHapticEnabled(data[0].haptics);
       } else {
         // open toast
-        toast.current.show({ severity: "error", summary: "Error", detail: `Error while updating Mantra target`, life: 1500 });
+        toast.current.show({ severity: "error", summary: "Error", detail: `Error while fetching data`, life: 1500 });
       }
     } catch (err) {
       // open toast
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Error while updating Mantra Target, Please try again later or contact tech support",
+        detail: "Error while fetching data, Please try again later or contact tech support",
       });
     }
+  }
+
+  useEffect(() => {
+    if (user && user.id !== "") {
+      fetchAndSetCurrentData();
+    }
+  }, [user]);
+
+  // --- Handlers ---
+  const handleSetMantra = async () => {
+    setMantraTarget(tempMantra);
+    toast.current.show({ severity: "success", summary: "Updated", detail: `Mantra target set to ${tempMantra}`, life: 1500 });
   };
 
   const handleSetMala = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("users_mantra")
-        .upsert(
-          {
-            updated_dttm: new Date(),
-            mala_target: tempMala,
-            user_id: user.id,
-          },
-          { onConflict: "user_id" }, // Use a comma-separated string for multiple column check
-        )
-        .select();
-
-      if (data) {
-        setMalaTarget(data[0].mala_target);
-        toast.current.show({ severity: "success", summary: "Updated", detail: `Mala target set to ${data[0].mala_target}`, life: 1500 });
-      } else {
-        // open toast
-        toast.current.show({ severity: "error", summary: "Error", detail: `Error while updating Mantra target`, life: 1500 });
-      }
-    } catch (err) {
-      // open toast
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Error while updating Mala Target, Please try again later or contact tech support",
-      });
-    }
+    setMalaTarget(tempMala);
+    toast.current.show({ severity: "success", summary: "Updated", detail: `Mala target set to ${tempMala}`, life: 1500 });
   };
 
   // --- Reset Handlers ---
@@ -225,7 +238,6 @@ export default function MantraWatch() {
             updated_dttm: new Date(),
             haptics: !hapticEnabled,
             user_id: user.id,
-            goal_achieved: false,
           },
           { onConflict: "user_id" }, // Use a comma-separated string for multiple column check
         )
@@ -264,21 +276,54 @@ export default function MantraWatch() {
     }
   };
 
+  // Track if we are currently syncing
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  // --- Supabase Sync Logic (Debounced) ---
+  useEffect(() => {
+    // Don't sync if values are 0 (initial load)
+    if (mantras === 0 && malas === 0) return;
+
+    // Wait 1.5 seconds after the last state change before saving
+    const handler = setTimeout(async () => {
+      setIsSyncing(true);
+
+      const { error } = await supabase.from("users_mantra").upsert(
+        {
+          total_mala: malas,
+          current_japa: mantras,
+          mantra_target: mantraTarget,
+          mala_target: malaTarget,
+          user_id: user.id,
+          updated_dttm: new Date(),
+        },
+        { onConflict: "user_id" },
+      );
+      if (error) {
+        console.error("Sync Error:", error.message);
+      } else {
+        // Optional: show a subtle sync indicator
+        console.log("Progress saved to cloud");
+      }
+      setIsSyncing(false);
+    }, 1500);
+
+    return () => clearTimeout(handler);
+  }, [mantras, malas, mantraTarget, malaTarget]);
+
   return (
     <div className="flex flex-column align-items-center justify-content-center text-gray-100 p-3" style={{ minHeight: "calc(100vh - 9rem)" }}>
       <Toast ref={toast} />
       <ConfirmDialog />
 
-      {/* Top Utility Bar */}
-      <div className="flex justify-content-end w-full max-w-26rem mb-4">
-        <Button
-          className={`p-button-rounded ${hapticEnabled ? "p-button-warning" : "p-button-secondary p-button-outlined"}`}
-          onClick={toggleHaptic}
-          tooltip={hapticEnabled ? "Disable Haptics" : "Enable Haptics"}
-          tooltipOptions={{ position: "left" }}
-          //   style={{ width: "45px", height: "45px" }}
-        >
-          {/* 2. Render Lucide icons conditionally */}
+      {/* Top Utility Bar with Sync Indicator */}
+      <div className="flex justify-content-between w-full max-w-26rem mb-4 align-items-center">
+        <div className="text-gray-500">
+          {isSyncing ? <i className="pi pi-spin pi-spinner mr-2" /> : <i className="pi pi-cloud mr-2" />}
+          <span className="text-xs uppercase font-bold">{isSyncing ? "Syncing..." : "Cloud Saved"}</span>
+        </div>
+
+        <Button className={`p-button-rounded ${hapticEnabled ? "p-button-warning" : "p-button-secondary p-button-outlined"}`} onClick={toggleHaptic}>
           {hapticEnabled ? <VibrateIcon size={20} /> : <VibrateOffIcon size={20} />}
         </Button>
       </div>
@@ -381,11 +426,11 @@ export default function MantraWatch() {
         </div>
       </div>
 
-      <Dialog header="Sadhana Complete" visible={showSuccess} style={{ width: "350px" }} onHide={() => setShowSuccess(false)} className="dark-dialog">
+      <Dialog header="Mantra Sadhana Achieved" visible={showSuccess} style={{ width: "350px" }} onHide={() => setShowSuccess(false)} className="dark-dialog">
         <div className="text-center">
           <i className="pi pi-sun text-6xl text-orange-500 mb-4"></i>
-          <p className="text-lg">Your meditation session is complete.</p>
-          <Button label="New Session" className="p-button-orange mt-3" onClick={resetAll} />
+          <p className="text-lg">Your mantra target is achieved.</p>
+          <Button label="Start New Counter" className="p-button-orange mt-3" onClick={resetAll} />
         </div>
       </Dialog>
     </div>
