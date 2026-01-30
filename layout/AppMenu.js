@@ -42,6 +42,13 @@ const AppMenu = () => {
               title: "Dashboard",
               icon: "pi pi-home",
               to: "/dashboard",
+              // visible: false,
+            },
+            {
+              title: "Mantra Counter",
+              icon: "pi pi-plus-circle",
+              to: "/mantra-counter",
+              visible: ["SUPER_ADMIN"].includes(user.role) ? true : false,
             },
             {
               title: "Admin Panel",
