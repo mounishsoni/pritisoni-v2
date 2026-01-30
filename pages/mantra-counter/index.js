@@ -42,6 +42,13 @@ export default function MantraWatch() {
     setShowSuccess(false);
   };
 
+  // Helper for haptic feedback (20ms is a short, sharp tap)
+  const triggerHaptic = () => {
+    if (window.navigator && window.navigator.vibrate) {
+      window.navigator.vibrate(20);
+    }
+  };
+
   return (
     <div className="flex flex-column align-items-center justify-content-center text-gray-100 p-3" style={{ minHeight: "calc(100vh - 9rem)" }}>
       {/* Watch Frame */}
@@ -83,7 +90,10 @@ export default function MantraWatch() {
           <Button
             icon="pi pi-minus"
             className="p-button-rounded p-button-outlined p-button-secondary shadow-4"
-            onClick={() => setMantras((prev) => Math.max(0, prev - 1))}
+            onClick={() => {
+              setMantras((prev) => Math.max(0, prev - 1));
+              triggerHaptic();
+            }}
             disabled={isGoalAchieved || mantras === 0}
             style={{ width: "60px", height: "60px", borderWidth: "2px" }}
           />
@@ -93,7 +103,10 @@ export default function MantraWatch() {
             className={`border-circle shadow-6 flex flex-column align-items-center justify-content-center transition-all transition-duration-200 ${
               isGoalAchieved ? "bg-gray-700 border-gray-600" : "bg-orange-500 border-orange-400 hover:bg-orange-600 active:scale-95"
             }`}
-            onClick={() => setMantras((prev) => prev + 1)}
+            onClick={() => {
+              setMantras((prev) => prev + 1);
+              triggerHaptic();
+            }}
             disabled={isGoalAchieved}
             style={{
               width: "120px",
