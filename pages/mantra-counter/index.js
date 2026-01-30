@@ -340,7 +340,7 @@ export default function MantraWatch() {
         <div className="flex flex-column align-items-center z-1">
           <span className="text-orange-400 font-bold text-xl tracking-widest uppercase mb-1">Total Mala</span>
           <div className="surface-900 border-circle flex align-items-center justify-content-center border-1 border-gray-600 mb-3 px-2 py-1">
-            <span className="text-4xl font-bold text-white">{malas}</span>
+            <span className="text-4xl font-bold text-gray-200">{malas}</span>
             <span className="text-3xl text-gray-500 ml-1">/{malaTarget}</span>
           </div>
           <span className="text-400 text-xl font-medium uppercase">Current Japa</span>
