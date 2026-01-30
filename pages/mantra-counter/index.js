@@ -216,25 +216,51 @@ export default function MantraWatch() {
   };
 
   // --- Haptic Logic ---
-  const toggleHaptic = () => {
-    const newState = !hapticEnabled;
-    setHapticEnabled(newState);
+  const toggleHaptic = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("users_mantra")
+        .upsert(
+          {
+            updated_dttm: new Date(),
+            haptics: !hapticEnabled,
+            user_id: user.id,
+            goal_achieved: false,
+          },
+          { onConflict: "user_id" }, // Use a comma-separated string for multiple column check
+        )
+        .select();
 
-    toast.current.show({
-      severity: "info",
-      summary: newState ? "Haptics On" : "Haptics Off",
-      detail: newState ? "Vibration enabled" : "Vibration disabled",
-      life: 2000,
-    });
+      if (data) {
+        setHapticEnabled(data[0].haptics);
 
-    if (newState && window.navigator.vibrate) {
-      window.navigator.vibrate(20);
+        toast.current.show({
+          severity: "info",
+          summary: data[0].haptics ? "Haptics On" : "Haptics Off",
+          detail: data[0].haptics ? "Vibration enabled" : "Vibration disabled",
+          life: 2000,
+        });
+
+        if (data[0].haptics && window.navigator.vibrate) {
+          window.navigator.vibrate(500);
+        }
+      } else {
+        // open toast
+        toast.current.show({ severity: "error", summary: "Error", detail: `Error while updating vibrate mode`, life: 1500 });
+      }
+    } catch (err) {
+      // open toast
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Error while updating Vibrate Mode, Please try again later or contact tech support",
+      });
     }
   };
 
   const triggerHaptic = () => {
     if (hapticEnabled && window.navigator && window.navigator.vibrate) {
-      window.navigator.vibrate(20);
+      window.navigator.vibrate(200);
     }
   };
 
