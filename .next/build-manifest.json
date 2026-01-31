@@ -25,20 +25,15 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/playlist": [
+    "/admin": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/playlist.js"
+      "static/chunks/pages/admin.js"
     ],
-    "/playlist/[id]": [
+    "/dashboard": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/playlist/[id].js"
-    ],
-    "/video/[id]": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/video/[id].js"
+      "static/chunks/pages/dashboard.js"
     ]
   },
   "ampFirstPages": []
