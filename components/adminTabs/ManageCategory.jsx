@@ -7,8 +7,8 @@ import { Button } from "primereact/button";
 import { supabase } from "../../config/supabaseClient";
 import { Tooltip } from "primereact/tooltip";
 
-export default function ManagePlayList({ user }) {
-  const [fetchedPlaylistData, setFetchedPlaylistData] = useState([]);
+export default function ManageCategory({ user }) {
+  const [fetchedCategoryData, setFetchedCategoryData] = useState([]);
   const [filters, setFilters] = useState(null);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
 
@@ -18,20 +18,20 @@ export default function ManagePlayList({ user }) {
     }
   };
 
-  async function fetchPlaylist() {
+  async function fetchCategory() {
     try {
-      let query = supabase.from("playlist").select("*");
+      let query = supabase.from("category").select("*");
 
-      let { data: playlistData, error } = await query.order("created_dttm", {
+      let { data: categoryData, error } = await query.order("created_dttm", {
         ascending: false,
         nullsFirst: false,
       });
 
-      if (playlistData) {
-        playlistData.forEach((i) => (i.created_dttm = dateTimeFormat(i.created_dttm)));
-        playlistData.forEach((i) => (i.updated_dttm = dateTimeFormat(i.updated_dttm)));
+      if (categoryData) {
+        categoryData.forEach((i) => (i.created_dttm = dateTimeFormat(i.created_dttm)));
+        categoryData.forEach((i) => (i.updated_dttm = dateTimeFormat(i.updated_dttm)));
 
-        setFetchedPlaylistData(playlistData);
+        setFetchedCategoryData(categoryData);
       }
     } catch (e) {
       // TODO: open error toast
@@ -53,27 +53,9 @@ export default function ManagePlayList({ user }) {
   }
 
   useEffect(() => {
-    fetchPlaylist();
+    fetchCategory();
     initFilters();
   }, []);
-
-  // on row edit logic
-  const onRowEditComplete = (e) => {
-    let _products = [...products];
-    let { newData, index } = e;
-
-    _products[index] = newData;
-
-    setProducts(_products);
-  };
-
-  const allowEdit = (rowData) => {
-    return;
-  };
-
-  const textEditor = (options) => {
-    return <InputText type="text" value={options.value} onChange={(e) => options.editorCallback(e.target.value)} />;
-  };
 
   const clearFilter = () => {
     initFilters();
@@ -138,7 +120,7 @@ export default function ManagePlayList({ user }) {
     <>
       <div className="card">
         <DataTable
-          value={fetchedPlaylistData}
+          value={fetchedCategoryData}
           paginator
           showGridlines
           stripedRows
@@ -151,22 +133,20 @@ export default function ManagePlayList({ user }) {
           columnResizeMode="expand"
           rows={10}
           rowsPerPageOptions={[10, 20, 30, 50]}
-          dataKey="id"
+          dataKey="category_id"
           filters={filters}
           header={header}
-          editMode="row"
-          onRowEditComplete={onRowEditComplete}
-          emptyMessage="No playlist/video found."
+          emptyMessage="No collection found."
         >
-          <Column rowEditor={allowEdit} header="Edit" headerStyle={{ width: "10%" }} bodyStyle={{ textAlign: "center" }}></Column>
+          <Column header="Action" headerStyle={{ width: "10%" }} bodyStyle={{ textAlign: "center" }}></Column>
           <Column field="created_dttm" header="Created/Updated On" body={createdUpdatedDateRender} sortable />
-          <Column field="title" header="Title" editor={(options) => textEditor(options)} sortable />
+          <Column field="title" header="Title" sortable />
           <Column field="description" header="Description" body={descriptionRender} sortable />
-          <Column field="videoId" header="Video ID" sortable />
-          <Column field="collection_id" header="Collection ID" sortable />
-          <Column field="is_document" header="Document?" sortable />
-          <Column field="document_folder" header="Document Folder" sortable />
-          <Column field="document_name" header="Document Name" sortable />
+          <Column field="sub_title" header="Sub Title" sortable />
+          <Column field="url" header="URL" sortable />
+          <Column field="label" header="Label" sortable />
+          <Column field="icon" header="Icon" sortable />
+          <Column field="role" header="Role" sortable />
         </DataTable>
       </div>
     </>

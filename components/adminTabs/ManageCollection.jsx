@@ -57,24 +57,6 @@ export default function ManageCollection({ user }) {
     initFilters();
   }, []);
 
-  // on row edit logic
-  const onRowEditComplete = (e) => {
-    let _products = [...products];
-    let { newData, index } = e;
-
-    _products[index] = newData;
-
-    setProducts(_products);
-  };
-
-  const allowEdit = (rowData) => {
-    return;
-  };
-
-  const textEditor = (options) => {
-    return <InputText type="text" value={options.value} onChange={(e) => options.editorCallback(e.target.value)} />;
-  };
-
   const clearFilter = () => {
     initFilters();
   };
@@ -151,22 +133,20 @@ export default function ManageCollection({ user }) {
           columnResizeMode="expand"
           rows={10}
           rowsPerPageOptions={[10, 20, 30, 50]}
-          dataKey="collection_id"
+          dataKey="id"
           filters={filters}
           header={header}
-          editMode="row"
-          onRowEditComplete={onRowEditComplete}
           emptyMessage="No collection found."
         >
-          <Column rowEditor={allowEdit} header="Edit" headerStyle={{ width: "10%" }} bodyStyle={{ textAlign: "center" }}></Column>
+          <Column header="Action" headerStyle={{ width: "10%" }} bodyStyle={{ textAlign: "center" }}></Column>
           <Column field="created_dttm" header="Created/Updated On" body={createdUpdatedDateRender} sortable />
-          <Column field="title" header="Title" sortable />
+          <Column field="title" header="Title" editor={(options) => textEditor(options)} sortable />
           <Column field="description" header="Description" body={descriptionRender} sortable />
-          <Column field="sub_title" header="Sub Title" sortable />
-          <Column field="url" header="URL" sortable />
-          <Column field="label" header="Label" sortable />
-          <Column field="icon" header="Icon" sortable />
-          <Column field="role" header="Role" sortable />
+          <Column field="videoId" header="Video ID" sortable />
+          <Column field="category_id" header="Collection ID" sortable />
+          <Column field="is_document" header="Document?" sortable />
+          <Column field="document_folder" header="Document Folder" sortable />
+          <Column field="document_name" header="Document Name" sortable />
         </DataTable>
       </div>
     </>
