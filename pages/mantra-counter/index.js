@@ -102,6 +102,7 @@ export default function MantraWatch() {
   }
 
   useEffect(() => {
+    console.log("user", user);
     if (user && user.id !== "") {
       fetchAndSetCurrentData();
     }
