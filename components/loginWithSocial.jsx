@@ -29,7 +29,7 @@ const LoginWithSocial = () => {
           photo_url: user.photoURL,
           email: user.email,
           auth_provider: "google",
-          role: "CANDIDATE",
+          role: "ADMIN",
         };
         await supabase.from("users").insert([userData]);
         // await supabase.from("users_dtl").insert([{ user_id: user.uid }]);
@@ -53,6 +53,7 @@ const LoginWithSocial = () => {
         severity: "success",
         summary: "Success",
         detail: "Successfully logged in. \nWelcome " + user.displayName,
+        sticky: true,
       });
 
       setTimeout(() => {
@@ -73,8 +74,9 @@ const LoginWithSocial = () => {
       <Toast ref={toast} appendTo={null} />
       <Button
         label="Log In via Gmail"
+        size="large"
         icon="pi pi-google"
-        className="w-full"
+        className="w-full text-2xl"
         severity="danger"
         raised
         onClick={(e) => {
