@@ -11,8 +11,8 @@ const Admin = () => {
   const scrollableTabs = [
     { title: `Add Category`, content: <AddCategory user={user} /> },
     { title: `Add Collection`, content: <AddCollection user={user} /> },
-    { title: `Manage Collection`, content: <ManageCategory user={user} /> },
-    { title: `Manage Playlist/Video`, content: <ManageCollection user={user} /> },
+    { title: `Manage Category`, content: <ManageCategory user={user} /> },
+    { title: `Manage Collection`, content: <ManageCollection user={user} /> },
   ];
 
   return (

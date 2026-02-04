@@ -6,9 +6,8 @@ const initialState = {
     name: "",
     id: "",
     role: "",
-    pickup_branch: "",
-    drop_branch: "",
-    playlist: [],
+    // playlist: [],
+    // currentIndex: null,
   },
   loggedIn: false,
 };

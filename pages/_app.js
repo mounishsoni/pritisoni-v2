@@ -13,37 +13,33 @@ import { setUserData } from "../features/slice/initialStatesSlice";
 import Router from "next/router";
 
 export default function MyApp({ Component, pageProps }) {
-    useEffect(() => {
-        if (window.location.pathname !== "/") {
-            try {
-                const user = JSON.parse(getDecryptedItem("user"));
-                if (user.id) {
-                    store.dispatch(setUserData(user));
-                } else {
-                    Router.push("/access");
-                }
-            } catch (e) {
-                console.warn(e);
-                Router.push("/access");
-            }
+  useEffect(() => {
+    if (window.location.pathname !== "/") {
+      try {
+        const user = JSON.parse(getDecryptedItem("user"));
+        if (user && user.id) {
+          store.dispatch(setUserData(user));
+        } else {
+          Router.push("/access");
         }
-    }, []);
-
-    if (Component.getLayout) {
-        return (
-            <LayoutProvider>
-                {Component.getLayout(<Component {...pageProps} />)}
-            </LayoutProvider>
-        );
-    } else {
-        return (
-            <LayoutProvider>
-                <Provider store={store}>
-                    <Layout>
-                        <Component {...pageProps} />
-                    </Layout>
-                </Provider>
-            </LayoutProvider>
-        );
+      } catch (e) {
+        console.warn(e);
+        Router.push("/access");
+      }
     }
+  }, []);
+
+  if (Component.getLayout) {
+    return <LayoutProvider>{Component.getLayout(<Component {...pageProps} />)}</LayoutProvider>;
+  } else {
+    return (
+      <LayoutProvider>
+        <Provider store={store}>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </Provider>
+      </LayoutProvider>
+    );
+  }
 }

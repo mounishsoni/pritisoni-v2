@@ -43,10 +43,10 @@ const LoginWithSocial = () => {
           id: userData.user_id,
           email: userData.email,
           role: userData.role,
-          pickup_branch: userData.pickup_branch,
-          drop_branch: userData.drop_branch,
-          playlist: [],
-        })
+          // TODO: set below states from user table
+          // playlist: [],
+          // currentIndex: null,
+        }),
       );
 
       toast.current.show({

@@ -255,7 +255,7 @@ const Video = () => {
     if (!existingItem) {
       // setPlayNextVideoListData((prevItems) => [...prevItems, newItem]);
       newPlaylist.push(newItem);
-      dispatch(setUserData({ ...user, playlist: newPlaylist, currentIndex: user?.currentIndex ? user.currentIndex : 0 }));
+      // dispatch(setUserData({ ...user, playlist: newPlaylist, currentIndex: user?.currentIndex ? user.currentIndex : 0 }));
     } else {
       // open toast
       toast.current.show({
