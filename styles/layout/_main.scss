@@ -39,8 +39,8 @@ a {
   height: 100vh;
 }
 
-.img-background .surface-card {
-  backdrop-filter: blur(20px);
+.surface-card {
+  backdrop-filter: blur(5px);
   background: transparent !important;
 }
 
@@ -423,9 +423,11 @@ a {
   background-color: var(--surface-ground) !important;
   padding: 0 !important;
 }
+
 .p-dataview-header div div {
   margin: 0 !important;
 }
+
 .p-dataview-content {
   background-color: var(--surface-ground) !important;
 }
