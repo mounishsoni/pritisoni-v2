@@ -5,6 +5,7 @@ const initialState = {
   user: {
     name: "",
     id: "",
+    email: "",
     role: "",
     // playlist: [],
     // currentIndex: null,

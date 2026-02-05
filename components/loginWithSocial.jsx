@@ -20,7 +20,7 @@ const LoginWithSocial = () => {
     try {
       const res = await auth.signInWithPopup(provider);
       const user = res.user;
-      const fetchUser = await supabase.from("users").select().ilike("user_id", user.uid);
+      const fetchUser = await supabase.from("users").select("*").eq("user_id", user.uid);
       let userData = {};
       if (fetchUser.data.length === 0) {
         userData = {
